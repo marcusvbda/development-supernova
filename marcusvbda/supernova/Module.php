@@ -1,10 +1,20 @@
 <?php
 
 namespace marcusvbda\supernova;
+use  Illuminate\View\View;
 
 class Module
 {
-    public function id()
+    public function title($page):string
+    {
+        $name = $this->name();
+        return match($page) {
+            'index' =>  "Listagem de ".data_get($name,1,$this->id()),
+            default => $this->id()
+        };
+    }
+
+    public function id():string
     {
         return class_basename(get_class($this));
     }
@@ -14,9 +24,17 @@ class Module
         return true;
     }
 
-    public function index()
+    public function index():View
     {
-        $moduleId = $this->id();
-        return view("supernova::modules.index", compact("moduleId"));
+        $module = $this;
+        return view("supernova::modules.index", compact("module"));
+    }
+
+    public function name():array
+    {
+        $id = $this->id();
+        $singular = (substr($id, -1) === 's') ? substr($id, 0, -1) : $id;
+        $plural = (substr($id, -1) === 's') ? $id : $id. 's';
+        return [$singular,$plural];
     }
 }

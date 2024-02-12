@@ -16,11 +16,8 @@ class ModulesController extends Controller
     private function getModule($module)
     {
         $module = $this->modulesPath . ucfirst($module);
-        try {
-            return app()->make($module);
-        } catch (\Throwable $th) {
-            abort(404);
-        }
+        if(!class_exists($module)) abort(404);
+        return app()->make($module);
     }
 
     public function index($module)
