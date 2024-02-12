@@ -2,18 +2,11 @@
 
 namespace marcusvbda\supernova;
 
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
-
-// use Livewire\Mechanisms\ComponentRegistry;
-// use marcusvbda\supernova\components\DataTable;
-
 class Module
 {
     public function id()
     {
-        $moduleName = explode("\\", get_class($this));
-        return Crypt::encryptString(strtolower($moduleName[count($moduleName) - 1]));
+        return class_basename(get_class($this));
     }
 
     public function canViewIndex(): bool

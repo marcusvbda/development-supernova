@@ -1,6 +1,6 @@
 <?php
 
-namespace marcusvbda\supernova\components;
+namespace marcusvbda\supernova\livewire\components;
 
 use Livewire\Component;
 
@@ -20,6 +20,6 @@ class Datatable extends Component
 
     public function render()
     {
-        return view('supernova::components.datatable-view');
+        return view('supernova-livewire-views::datatable');
     }
 }
