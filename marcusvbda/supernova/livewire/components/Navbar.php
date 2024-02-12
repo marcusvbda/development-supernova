@@ -2,54 +2,33 @@
 
 namespace marcusvbda\supernova\livewire\components;
 
+use App\Http\Supernova\Application;
 use Livewire\Component;
 
 class Navbar extends Component
 {
-    public $config;
-    public $showUserMenu = false;
-
-    public function mount()
+    public $items = [];
+    private function makeItems(): void
     {
-        $this->config = [
-            'items' => $this->makeItems()
-        ];
-    }
-
-    public function show()
-    {
-        $this->showUserMenu = true;
-    }
-
-    public function hide()
-    {
-        $this->showUserMenu = false;
-    }
-
-    private function makeItems()
-    {
-        $items = [
-            [
-                'label' => 'Home',
-                'url' => '/',
-                'icon' => 'home'
-            ],
-            [
-                'label' => 'About',
-                'url' => '/about',
-                'icon' => 'info'
-            ],
-            [
-                'label' => 'Contact',
-                'url' => '/contact',
-                'icon' => 'phone'
-            ]
-        ];
-        return $items;
+        $app = app()->make(config("supernova.application", Application::class));
+        $modules = $app->getAllModules();
+        $items = [];
+        foreach ($modules as $module) {
+            if (!$module->menu()) continue;
+            $menu = $module->menu();
+            if (!strpos($menu, ".")) {
+                $items[$menu] = route("supernova.modules.index", ["module" => strtolower($menu)]);
+            } else {
+                $menu = explode(".", $menu);
+                $items[$menu[0]][$menu[1]] = route("supernova.modules.index", ["module" => strtolower($menu[1])]);
+            }
+        }
+        $this->items = $items;
     }
 
     public function render()
     {
+        $this->makeItems();
         return view('supernova-livewire-views::navbar');
     }
 }

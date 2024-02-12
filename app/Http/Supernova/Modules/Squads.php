@@ -6,8 +6,8 @@ use marcusvbda\supernova\Module;
 
 class Squads extends Module
 {
-    // public function canViewIndex(): bool
+    // public function subMenu(): string
     // {
-    //     return false;
+    //     return "Times";
     // }
 }

@@ -3,7 +3,8 @@
 use App\Http\Supernova\Application;
 
 return [
-    "modules_path" => 'App\\Http\\Supernova\\Modules\\',
+    "modules_namespace" => 'App\\Http\\Supernova\\Modules\\',
+    "modules_path" => "Http/Supernova/Modules/",
     "application" => Application::class,
-    "modules_template" => "supernova::layouts.default"
+    "modules_template" => "supernova::layouts.default",
 ];
