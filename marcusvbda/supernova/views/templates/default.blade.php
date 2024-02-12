@@ -2,6 +2,7 @@
 
 <head>
     @yield('head')
+    @vite('resources/scss/app.scss')
     @livewireStyles
 </head>
 
