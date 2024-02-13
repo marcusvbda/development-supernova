@@ -4,6 +4,7 @@ namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
 use Livewire\Component;
+use Auth;
 
 class Navbar extends Component
 {
@@ -39,6 +40,9 @@ class Navbar extends Component
 
     public function render()
     {
+        if (!Auth::check()) return <<<BLADE
+            <div></div>
+        BLADE;
         $this->makeSettings();
         return view('supernova-livewire-views::navbar');
     }

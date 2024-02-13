@@ -3,11 +3,14 @@
 namespace marcusvbda\supernova;
 
 use Auth;
+use marcusvbda\supernova\livewire\components\Datatable;
+use marcusvbda\supernova\livewire\components\Login;
+use marcusvbda\supernova\livewire\components\Navbar;
 
 class Application
 {
-    protected $modulesNamespace = "";
-    protected $modulesPath = "";
+    protected $modulesNamespace;
+    protected $modulesPath;
 
     public function __construct()
     {
@@ -22,7 +25,6 @@ class Application
 
     public function middleware($request, $next)
     {
-        return $next($request); // remover
         if (Auth::check()) return $next($request);
         return redirect()->route('supernova.login', ["redirect" => request()->path()]);
     }
@@ -41,9 +43,7 @@ class Application
 
     public function logo(): string
     {
-        return <<<BLADE
-            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500">
-        BLADE;
+        return "https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500";
     }
 
     public function title(): string
@@ -82,5 +82,20 @@ class Application
         }
 
         return $modules;
+    }
+
+    public function loginForm()
+    {
+        return Login::class;
+    }
+
+    public function navbar()
+    {
+        return Navbar::class;
+    }
+
+    public function datatable()
+    {
+        return Datatable::class;
     }
 }
