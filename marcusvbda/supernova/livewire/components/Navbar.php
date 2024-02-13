@@ -15,32 +15,45 @@ class Navbar extends Component
     public $homeRoute;
     public $menuUserNavbar;
 
+    public function __construct()
+    {
+        $this->application = app()->make(config("supernova.application", Application::class));
+    }
+
     private function makeSettings(): void
     {
-        $application = app()->make(config("supernova.application", Application::class));
-        $modules =  $application->getAllModules();
+        $modules =  $this->application->getAllModules();
         $items = [];
         foreach ($modules as $module) {
             if (!$module->menu()) continue;
             $menu = $module->menu();
             if (!strpos($menu, ".")) {
-                $items[$menu] = route("supernova.modules.index", ["module" => strtolower($menu)]);
+                [$title, $url] =  $this->extractItemDetails($menu);
+                $items[$title] = $url;
             } else {
                 $menu = explode(".", $menu);
-                $items[$menu[0]][$menu[1]] = route("supernova.modules.index", ["module" => strtolower($menu[1])]);
+                [$title, $url] =  $this->extractItemDetails($menu[1]);
+                $items[$menu[0]][$title] = $url;
             }
         }
         $this->items = $items;
         $this->currentUrl = request()->url();
-        $this->logo = $application->logo();
-        $this->homeTitle = $application->homeTitle();
+        $this->logo = $this->application->logo();
+        $this->homeTitle = $this->application->homeTitle();
         $this->homeRoute = route("supernova.home");
-        $this->menuUserNavbar = $application->menuUserNavbar();
+        $this->menuUserNavbar = $this->application->menuUserNavbar();
+    }
+
+    public function extractItemDetails($item)
+    {
+        $url = str_replace("'", "", str_replace("href='", "", str_replace("}", "", explode("{", $item)[1])));
+        $title =  substr($item, 0, strpos($item, "{"));
+        return [$title, $url];
     }
 
     public function render()
     {
-        if (!Auth::check()) return <<<BLADE
+        if (!Auth::check() && $this->application->secureRoutes()) return <<<BLADE
             <div></div>
         BLADE;
         $this->makeSettings();

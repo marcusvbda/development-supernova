@@ -17,7 +17,8 @@ class Module
 
     public function id(): string
     {
-        return class_basename(get_class($this));
+        $name = class_basename(get_class($this));
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $name));
     }
 
     public function canViewIndex(): bool
@@ -34,8 +35,8 @@ class Module
     public function name(): array
     {
         $id = $this->id();
-        $singular = (substr($id, -1) === 's') ? substr($id, 0, -1) : $id;
-        $plural = (substr($id, -1) === 's') ? $id : $id . 's';
+        $singular = ucfirst((substr($id, -1) === 's') ? substr($id, 0, -1) : $id);
+        $plural = ucfirst((substr($id, -1) === 's') ? $id : $id . 's');
         return [$singular, $plural];
     }
 
@@ -48,6 +49,7 @@ class Module
     {
         $sub = $this->subMenu();
         $menu = $this->name()[1];
-        return $sub ? "$sub.$menu" : $menu;
+        $url = route("supernova.modules.index", ["module" => strtolower($this->id())]);
+        return $sub ? "$sub.$menu{href='$url'}" : "$menu{href='$url'}";
     }
 }

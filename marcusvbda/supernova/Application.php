@@ -23,21 +23,28 @@ class Application
         return "Dashboard";
     }
 
+    public function secureRoutes()
+    {
+        return true;
+    }
+
     public function middleware($request, $next)
     {
+        if (!$this->secureRoutes()) return $next($request);
         if (Auth::check()) return $next($request);
         return redirect()->route('supernova.login', ["redirect" => request()->path()]);
     }
 
     public function menuUserNavbar(): array
     {
+        $items = [];
+        if ($this->secureRoutes()) $items["Sair"] = route("supernova.login");
+
         return [
             "element" => <<<BLADE
                 <img class="h-8 w-8 rounded-full" src="https://images.squarespace-cdn.com/content/v1/61252ad026b2035cd08c26a6/1658329270544-UI18QS4NLSP83HOA0WUB/user-placeholder-avatar.png?format=2500w">
             BLADE,
-            "items" => [
-                "Sair" => route("supernova.login")
-            ]
+            "items" => $items
         ];
     }
 
