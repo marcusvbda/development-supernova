@@ -2,6 +2,7 @@
 
 namespace marcusvbda\supernova;
 
+use App\Models\User;
 use Auth;
 use marcusvbda\supernova\livewire\components\Datatable;
 use marcusvbda\supernova\livewire\components\Login;
@@ -23,14 +24,8 @@ class Application
         return "Dashboard";
     }
 
-    public function secureRoutes()
-    {
-        return true;
-    }
-
     public function middleware($request, $next)
     {
-        if (!$this->secureRoutes()) return $next($request);
         if (Auth::check()) return $next($request);
         return redirect()->route('supernova.login', ["redirect" => request()->path()]);
     }
@@ -38,11 +33,15 @@ class Application
     public function menuUserNavbar(): array
     {
         $items = [];
-        if ($this->secureRoutes()) $items["Sair"] = route("supernova.login");
+        $items["Sair"] = route("supernova.logout");
 
+        $user = Auth::user();
         return [
             "element" => <<<BLADE
-                <img class="h-8 w-8 rounded-full" src="https://images.squarespace-cdn.com/content/v1/61252ad026b2035cd08c26a6/1658329270544-UI18QS4NLSP83HOA0WUB/user-placeholder-avatar.png?format=2500w">
+                <div class="flex items-center gap-3">
+                    <span class='text-gray-200 font-medium'>$user->name</span>
+                    <img class="h-8 w-8 rounded-full" src="$user->avatarImage">
+                </div>
             BLADE,
             "items" => $items
         ];
@@ -104,5 +103,10 @@ class Application
     public function datatable()
     {
         return Datatable::class;
+    }
+
+    public function UserModel()
+    {
+        return User::class;
     }
 }

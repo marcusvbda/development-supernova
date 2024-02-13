@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f1bea0d79202561c6eb0d6bea44cf67",
+    "content-hash": "6e94a661062b3209771adfbb48d7d4cf",
     "packages": [
         {
             "name": "brick/math",
@@ -1969,12 +1969,15 @@
             "time": "2024-01-28T19:07:11+00:00"
         },
         {
-            "name": "marcusvbda/supernova",
+            "name": "marcusvbda/Supernova",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
                 "url": "marcusvbda/supernova",
-                "reference": "3ba4b8bc501f5d880430c75cb818abc61127c28f"
+                "reference": "a1ff6e8d8f74cd8305e6bb7207fddba80138dc99"
+            },
+            "require": {
+                "livewire/livewire": "^3.4"
             },
             "type": "library",
             "autoload": {
@@ -6102,6 +6105,50 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2024-01-30T03:03:59+00:00"
+        },
+        {
+            "name": "lucascudo/laravel-pt-br-localization",
+            "version": "v2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucascudo/laravel-pt-BR-localization.git",
+                "reference": "49589685da70d66a391fbeb05e5cf7aa0f9cf848"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucascudo/laravel-pt-BR-localization/zipball/49589685da70d66a391fbeb05e5cf7aa0f9cf848",
+                "reference": "49589685da70d66a391fbeb05e5cf7aa0f9cf848",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Lucascudo\\LaravelPtBRLocalization\\LaravelPtBRLocalizationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lucascudo\\LaravelPtBRLocalization\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Cascudo",
+                    "email": "lucas.sisau@gmail.com"
+                }
+            ],
+            "description": "Arquivos de linguagem em Português do Brasil (pt_BR) para Laravel",
+            "support": {
+                "issues": "https://github.com/lucascudo/laravel-pt-BR-localization/issues",
+                "source": "https://github.com/lucascudo/laravel-pt-BR-localization/tree/v2.0.4"
+            },
+            "time": "2023-09-12T13:59:21+00:00"
         },
         {
             "name": "mockery/mockery",

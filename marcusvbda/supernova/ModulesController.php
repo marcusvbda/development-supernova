@@ -28,9 +28,15 @@ class ModulesController extends Controller
         return view("supernova::dashboard");
     }
 
-    public function login()
+    public function logout()
     {
         Auth::logout();
+        return redirect()->back();
+    }
+
+    public function login()
+    {
+        if (Auth::check()) return redirect()->route("supernova.home");
         $redirect = request()->get("redirect") ?? "/";
         return view("supernova::auth.login", compact("redirect"));
     }

@@ -53,7 +53,7 @@ class Navbar extends Component
 
     public function render()
     {
-        if (!Auth::check() && $this->application->secureRoutes()) return <<<BLADE
+        if (!Auth::check()) return <<<BLADE
             <div></div>
         BLADE;
         $this->makeSettings();
