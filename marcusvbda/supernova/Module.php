@@ -45,7 +45,7 @@ class Module
         return "";
     }
 
-    public function menu()
+    public function menu(): string
     {
         $sub = $this->subMenu();
         $menu = $this->name()[1];

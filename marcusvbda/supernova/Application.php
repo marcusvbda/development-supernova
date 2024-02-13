@@ -19,7 +19,7 @@ class Application
         $this->modulesPath = config("supernova.modules_path", "Http/Supernova/Modules/");
     }
 
-    public function homeTitle()
+    public function homeTitle(): string
     {
         return "Dashboard";
     }
@@ -90,22 +90,22 @@ class Application
         return $modules;
     }
 
-    public function loginForm()
+    public function loginForm(): string
     {
         return Login::class;
     }
 
-    public function navbar()
+    public function navbar(): string
     {
         return Navbar::class;
     }
 
-    public function datatable()
+    public function datatable(): string
     {
         return Datatable::class;
     }
 
-    public function UserModel()
+    public function UserModel(): string
     {
         return User::class;
     }
