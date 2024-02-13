@@ -2,9 +2,9 @@
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div class="relative flex h-16 items-center justify-between">
             <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div class="flex flex-shrink-0 items-center">
+                <a href="{{ $homeRoute }}" class="flex flex-shrink-0 items-center">
                     <img class="h-8 w-auto" src="{{ $logo }}">
-                </div>
+                </a>
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4">
                         <div class="relative flex">
@@ -33,7 +33,8 @@
                                         class="absolute left-0 top-0 z-10 mt-10 w-48 origin-top-right rounded-md bg-white dark:bg-gray-900 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                         role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                                         @foreach ($value as $menuItem => $menuValue)
-                                            <a href="{{ $menuValue }}" class="block px-4 py-2 text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-50"
+                                            <a href="{{ $menuValue }}"
+                                                class="block px-4 py-2 text-sm text-gray-700 dark:bg-gray-900 dark:text-gray-50"
                                                 role="menuitem">{{ $menuItem }}</a>
                                         @endforeach
                                     </div>
@@ -61,8 +62,9 @@
                             role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                             tabindex="-1">
                             @foreach (data_get($menuUserNavbar, 'items', []) as $key => $value)
-                                <a href="{{ $value }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-50" 
-                                    role="menuitem" tabindex="-1" id="user-menu-item-2">{{ $key }}</a>
+                                <a href="{{ $value }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-50" role="menuitem"
+                                    tabindex="-1" id="user-menu-item-2">{{ $key }}</a>
                             @endforeach
                         </div>
                     @endif
@@ -75,17 +77,17 @@
     <div class="sm:hidden" id="mobile-menu">
         <div class="space-y-1 px-2 pb-3 pt-2">
             <a href="{{ $homeRoute }}"
-                class="{{ $currentUrl == $homeRoute ? 'dark:bg-gray-900' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
+                class="{{ $currentUrl == $homeRoute ? 'dark:bg-gray-900 bg-gray-300' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
                 aria-current="page">{{ $homeTitle }}</a>
 
             @foreach ($items as $key => $value)
                 @if (is_string($value))
                     <a href="{{ $value }}"
-                        class="{{ $currentUrl == $value ? 'dark:bg-gray-900' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
+                        class="{{ $currentUrl == $value ? 'dark:bg-gray-900 bg-gray-300' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
                         aria-current="page"> {{ $key }}</a>
                 @else
                     <a href="#" @click.prevent="toogleOpenedMenu('{{ $key }}')"
-                        class="{{ in_array($currentUrl, collect($value)->values()->toArray()) ? 'dark:bg-gray-900' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
+                        class="{{ in_array($currentUrl, collect($value)->values()->toArray()) ? 'dark:bg-gray-900 bg-gray-300 ' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
                         aria-current="page"> {{ $key }} </a>
                     @foreach ($value as $menuItem => $menuValue)
                         <a v-if="openedMenu == '{{ $key }}'" href="{{ $menuValue }}"

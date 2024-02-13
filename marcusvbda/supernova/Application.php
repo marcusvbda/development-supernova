@@ -45,8 +45,8 @@ class Application
         return [
             "element" => <<<BLADE
                 <div class="flex items-center gap-3">
-                    <span class='dark:text-gray-200 font-medium'>$user->name</span>
                     <img class="h-8 w-8 rounded-full" src="$user->avatarImage">
+                    <span class='dark:text-gray-200 font-medium'>$user->name</span>
                 </div>
             BLADE,
             "items" => $items
@@ -119,5 +119,24 @@ class Application
     public function Breadcrumb(): string
     {
         return Breadcrumb::class;
+    }
+
+    public function DashboardGreetingMessage()
+    {
+        $user = Auth::user();
+        $hour = date('H');
+        $sufix = ($user?->firstName ?? $user->name) . "!";
+        if ($hour >= 5 && $hour <= 12) {
+            return "Bom dia, $sufix";
+        } else if ($hour > 12 && $hour <= 18) {
+            return "Boa tarde, $sufix";
+        } else {
+            return "Boa noite, $sufix";
+        }
+    }
+
+    public function dashboardMetrics()
+    {
+        return [];
     }
 }
