@@ -48,7 +48,7 @@ class CounterCard extends Component
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-50 mb-3">
                     $name
                 </h2>
-                <p class="text-4xl font-bold text-gray-800 dark:text-gray-50 mb-2">
+                <p class="text-4xl font-bold text-gray-700 dark:text-gray-50 mb-2">
                     $content
                 </p>
             </div>

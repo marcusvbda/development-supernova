@@ -2,23 +2,23 @@
 
 namespace App\Http\Supernova\Modules;
 
-use App\Models\User;
+use App\Models\Team;
 use marcusvbda\supernova\Module;
 
-class Users extends Module
+class Projects extends Module
 {
     public function subMenu(): string
     {
-        return "Times";
+        return "Demandas";
     }
 
     public function name(): array
     {
-        return ['Diwer', 'Diwers'];
+        return ['Projeto', 'Projetos'];
     }
 
     public function model(): string
     {
-        return User::class;
+        return Team::class;
     }
 }

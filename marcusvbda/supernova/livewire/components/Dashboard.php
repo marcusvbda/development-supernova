@@ -11,7 +11,7 @@ class Dashboard extends Component
     {
         $columns = implode("", $counters);
         $content = <<<HTML
-            <div class="grid lg:grid-cols-4 md:grid-cols-3 gap-3">
+            <div class="grid lg:grid-cols-5 md:grid-cols-3 gap-3">
                 $columns
             </div>
         HTML;

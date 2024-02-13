@@ -2,23 +2,18 @@
 
 namespace App\Http\Supernova\Modules;
 
-use App\Models\User;
+use App\Models\Squad;
 use marcusvbda\supernova\Module;
 
-class Users extends Module
+class Squads extends Module
 {
     public function subMenu(): string
     {
         return "Times";
     }
 
-    public function name(): array
-    {
-        return ['Diwer', 'Diwers'];
-    }
-
     public function model(): string
     {
-        return User::class;
+        return Squad::class;
     }
 }
