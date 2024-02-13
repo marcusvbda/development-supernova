@@ -4,14 +4,33 @@ namespace marcusvbda\supernova;
 
 use App\Http\Controllers\Controller;
 use App\Http\Supernova\Application;
+use Auth;
+use Illuminate\View\View;
 
 class ModulesController extends Controller
 {
-    public function index($module)
+    private $application;
+    public  function __construct()
     {
-        $app = app()->make(config("supernova.application", Application::class));
-        $module = $app->getModule($module);
+        $this->application = app()->make(config("supernova.application", Application::class));
+    }
+
+    public function index($module): View
+    {
+        $module = $this->application->getModule($module);
         if (!$module->canViewIndex()) abort(403);
         return $module->index();
+    }
+
+    public function dashboard(): View
+    {
+        $this->application = app()->make(config("supernova.application", Application::class));
+        return view("supernova::dashboard");
+    }
+
+    public function login()
+    {
+        Auth::logout();
+        dd('login here');
     }
 }

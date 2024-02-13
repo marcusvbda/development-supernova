@@ -2,6 +2,8 @@
 
 namespace marcusvbda\supernova;
 
+use Auth;
+
 class Application
 {
     protected $modulesNamespace = "";
@@ -13,9 +15,35 @@ class Application
         $this->modulesPath = config("supernova.modules_path", "Http/Supernova/Modules/");
     }
 
+    public function homeTitle()
+    {
+        return "Dashboard";
+    }
+
     public function middleware($request, $next)
     {
-        return $next($request);
+        return $next($request); // remover
+        if (Auth::check()) return $next($request);
+        return redirect()->route('supernova.login', ["redirect" => request()->path()]);
+    }
+
+    public function menuUserNavbar(): array
+    {
+        return [
+            "element" => <<<BLADE
+                <img class="h-8 w-8 rounded-full" src="https://images.squarespace-cdn.com/content/v1/61252ad026b2035cd08c26a6/1658329270544-UI18QS4NLSP83HOA0WUB/user-placeholder-avatar.png?format=2500w">
+            BLADE,
+            "items" => [
+                "Sair" => route("supernova.login")
+            ]
+        ];
+    }
+
+    public function logo(): string
+    {
+        return <<<BLADE
+            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500">
+        BLADE;
     }
 
     public function title(): string

@@ -7,11 +7,17 @@ use Livewire\Component;
 
 class Navbar extends Component
 {
-    public $items = [];
-    private function makeItems(): void
+    public $items;
+    public $currentUrl;
+    public $logo;
+    public $homeTitle;
+    public $homeRoute;
+    public $menuUserNavbar;
+
+    private function makeSettings(): void
     {
-        $app = app()->make(config("supernova.application", Application::class));
-        $modules = $app->getAllModules();
+        $application = app()->make(config("supernova.application", Application::class));
+        $modules =  $application->getAllModules();
         $items = [];
         foreach ($modules as $module) {
             if (!$module->menu()) continue;
@@ -24,11 +30,16 @@ class Navbar extends Component
             }
         }
         $this->items = $items;
+        $this->currentUrl = request()->url();
+        $this->logo = $application->logo();
+        $this->homeTitle = $application->homeTitle();
+        $this->homeRoute = route("supernova.home");
+        $this->menuUserNavbar = $application->menuUserNavbar();
     }
 
     public function render()
     {
-        $this->makeItems();
+        $this->makeSettings();
         return view('supernova-livewire-views::navbar');
     }
 }
