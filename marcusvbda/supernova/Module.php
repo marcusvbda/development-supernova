@@ -6,6 +6,29 @@ use  Illuminate\View\View;
 
 class Module
 {
+    public function model(): string
+    {
+        return "your model here ...";
+    }
+
+    public function getCacheQtyKey(): string
+    {
+        return 'qty:' . $this->id();
+    }
+
+    public function clearCacheQty(): void
+    {
+        cache()->forget($this->getCacheQtyKey());
+    }
+
+    public function getCachedQty()
+    {
+        $cacheTime = 60 * 24;
+        return cache()->remember($this->getCacheQtyKey(), $cacheTime, function () {
+            return app()->make($this->model())->count();
+        });
+    }
+
     public function title($page): string
     {
         $name = $this->name();
@@ -40,9 +63,9 @@ class Module
         return [$singular, $plural];
     }
 
-    public function subMenu(): string
+    public function subMenu(): ?string
     {
-        return "";
+        return null;
     }
 
     public function menu(): string
@@ -51,5 +74,15 @@ class Module
         $menu = $this->name()[1];
         $url = route("supernova.modules.index", ["module" => strtolower($this->id())]);
         return $sub ? "$sub.$menu{href='$url'}" : "$menu{href='$url'}";
+    }
+
+    public function dashboardCounterCard(): ?string
+    {
+        $moduleId = $this->id();
+        return <<<BLADE
+            @livewire('supernova::counter-card',[
+                'module' => '$moduleId',
+            ])
+        BLADE;
     }
 }

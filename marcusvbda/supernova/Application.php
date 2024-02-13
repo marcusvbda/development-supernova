@@ -5,6 +5,8 @@ namespace marcusvbda\supernova;
 use App\Models\User;
 use Auth;
 use marcusvbda\supernova\livewire\components\Breadcrumb;
+use marcusvbda\supernova\livewire\components\CounterCard;
+use marcusvbda\supernova\livewire\components\Dashboard;
 use marcusvbda\supernova\livewire\components\Datatable;
 use marcusvbda\supernova\livewire\components\Login;
 use marcusvbda\supernova\livewire\components\Navbar;
@@ -33,7 +35,7 @@ class Application
 
     public function darkMode(): bool
     {
-        return false;
+        return true;
     }
 
     public function menuUserNavbar(): array
@@ -135,8 +137,32 @@ class Application
         }
     }
 
-    public function dashboardMetrics()
+    public function dashboard(): string
     {
-        return [];
+        return Dashboard::class;
+    }
+
+    public function counterCard(): string
+    {
+        return CounterCard::class;
+    }
+
+    public function dashboardContent()
+    {
+        $modules = $this->getAllModules();
+        $counters = [];
+        foreach ($modules as $module) {
+            $counter = $module->dashboardCounterCard();
+            if ($counter) {
+                $counters[] = $counter;
+            }
+        }
+
+        return compact("counters");
+    }
+
+    public function cardCounterReloadTime(): int
+    {
+        return 60;
     }
 }
