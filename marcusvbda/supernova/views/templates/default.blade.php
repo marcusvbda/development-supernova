@@ -3,7 +3,7 @@
     $novaApp = app()->make(config('supernova.application', Application::class));
 @endphp
 
-<html>
+<html class="{{$novaApp->darkMode() ? 'dark' : 'ligth'}}">
 
 <head>
     <meta charset="UTF-8">
@@ -20,10 +20,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
-<body>
+<body class="bg-gray-100 dark:bg-gray-700">
     @livewire('supernova::navbar')
     @yield('body')
-    @yield('content')
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-4">
+        @yield('content')
+    </div>
     @yield('footer')
     @livewireScripts
 </body>

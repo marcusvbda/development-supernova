@@ -1,7 +1,7 @@
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <img class="mx-auto h-10 w-auto" src="{{ $logo }}">
-        <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-gray-50">
             Entre com a sua conta
         </h2>
     </div>
@@ -9,12 +9,12 @@
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" wire:submit.prevent="submit">
             <div>
-                <label for="email" class="block text-sm font-medium leading-6 text-gray-900">
+                <label for="email" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">
                     Email
                 </label>
                 <div class="mt-2">
                     <input wire:model.blur="email" wire:loading.attr="disabled"
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3">
+                        class="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50 @error('email'){{'dark:border-red-500'}} @enderror">
                     @error('email')
                         <div class="text-red-500 text-xs font-light mt-1">{{ $message }}</div>
                     @enderror
@@ -23,7 +23,7 @@
 
             <div>
                 <div class="flex items-center justify-between">
-                    <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Senha</label>
+                    <label for="password" class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-50">Senha</label>
                     {{-- <div class="text-sm">
                         <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">
                             Esqueceu a senha ?
@@ -32,7 +32,7 @@
                 </div>
                 <div class="mt-2">
                     <input type="password" wire:model.blur="password" wire:loading.attr="disabled"
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3">
+                        class="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50 @error('email'){{'dark:border-red-500'}} @enderror">
                     @error('password')
                         <div class="text-red-500 text-xs font-light mt-1">{{ $message }}</div>
                     @enderror

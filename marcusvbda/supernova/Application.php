@@ -4,6 +4,7 @@ namespace marcusvbda\supernova;
 
 use App\Models\User;
 use Auth;
+use marcusvbda\supernova\livewire\components\Breadcrumb;
 use marcusvbda\supernova\livewire\components\Datatable;
 use marcusvbda\supernova\livewire\components\Login;
 use marcusvbda\supernova\livewire\components\Navbar;
@@ -30,6 +31,11 @@ class Application
         return redirect()->route('supernova.login', ["redirect" => request()->path()]);
     }
 
+    public function darkMode(): bool
+    {
+        return false;
+    }
+
     public function menuUserNavbar(): array
     {
         $items = [];
@@ -39,7 +45,7 @@ class Application
         return [
             "element" => <<<BLADE
                 <div class="flex items-center gap-3">
-                    <span class='text-gray-200 font-medium'>$user->name</span>
+                    <span class='dark:text-gray-200 font-medium'>$user->name</span>
                     <img class="h-8 w-8 rounded-full" src="$user->avatarImage">
                 </div>
             BLADE,
@@ -108,5 +114,10 @@ class Application
     public function UserModel(): string
     {
         return User::class;
+    }
+
+    public function Breadcrumb(): string
+    {
+        return Breadcrumb::class;
     }
 }
