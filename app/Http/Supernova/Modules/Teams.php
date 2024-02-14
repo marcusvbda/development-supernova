@@ -9,7 +9,7 @@ class Teams extends Module
 {
     public function subMenu(): string
     {
-        return "Times";
+        return "Time";
     }
 
     public function name(): array

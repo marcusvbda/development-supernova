@@ -23,4 +23,25 @@ class Application extends SupernovaApplication
     {
         return asset("images/favicon.png");
     }
+
+    public function dashboardCounters()
+    {
+        $counters[] = $this->getModule("users")->dashboardCounterCard();
+        $counters[] = $this->getModule("projects")->dashboardCounterCard();
+        $counters[] = $this->getModule("customers")->dashboardCounterCard();
+        $counters[] = $this->getModule("squads")->dashboardCounterCard();
+        $counters[] = $this->getModule("teams")->dashboardCounterCard();
+        return $counters;
+    }
+
+    public function menuItems(): array
+    {
+        $items = parent::menuItems();
+        return [
+            "Dashboard" => data_get($items, "Dashboard"),
+            "Time" => data_get($items, "Time"),
+            "Demandas" => data_get($items, "Demandas"),
+            "Configurações" => data_get($items, "Configurações"),
+        ];
+    }
 }

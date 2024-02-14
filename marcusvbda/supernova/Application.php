@@ -147,7 +147,7 @@ class Application
         return CounterCard::class;
     }
 
-    public function dashboardContent()
+    public function dashboardCounters()
     {
         $modules = $this->getAllModules();
         $counters = [];
@@ -158,6 +158,12 @@ class Application
             }
         }
 
+        return $counters;
+    }
+
+    public function dashboardContent()
+    {
+        $counters = $this->dashboardCounters();
         return compact("counters");
     }
 
@@ -169,7 +175,9 @@ class Application
     public function menuItems(): array
     {
         $modules =  $this->getAllModules();
-        $items = [];
+        $items = [
+            $this->homeTitle() => route("supernova.home")
+        ];
         foreach ($modules as $module) {
             if (!$module->menu()) continue;
             $menu = $module->menu();

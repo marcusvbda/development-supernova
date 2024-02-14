@@ -11,7 +11,6 @@ class Navbar extends Component
     public $items;
     public $currentUrl;
     public $logo;
-    public $homeTitle;
     public $homeRoute;
     public $menuUserNavbar;
 
@@ -25,7 +24,6 @@ class Navbar extends Component
         $this->items = $this->application->menuItems();
         $this->currentUrl = request()->url();
         $this->logo = $this->application->logo();
-        $this->homeTitle = $this->application->homeTitle();
         $this->homeRoute = route("supernova.home");
         $this->menuUserNavbar = $this->application->menuUserNavbar();
     }

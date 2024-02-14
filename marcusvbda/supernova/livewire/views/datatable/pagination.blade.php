@@ -1,12 +1,12 @@
 <div class="flex items-center justify-between p-3 flex flex-row flex-col md:flex-row gap-3">
     <div class="w-full md:w-3/12">
-        <select
+        <select wire:model.change="perPage"
             class="block rounded-md w-full md:w-auto border py-1.5 pr-20 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="all">Todos</option>
+            @foreach ($perPageOptions as $option)
+                <option value="{{ $option }}">
+                    {{ $option }}
+                </option>
+            @endforeach
         </select>
     </div>
 

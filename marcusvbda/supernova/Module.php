@@ -101,4 +101,50 @@ class Module
     {
         return true;
     }
+
+    public function dataTable(): array
+    {
+        $tableColumns = $this->getTableColumns();
+        $columns = [];
+        foreach ($tableColumns as $column) {
+            $columns[] =  Column::name($column)->label($column)->searchable()->sortable()->filterable();
+        }
+        return $columns;
+    }
+
+    public function getTableColumns(): array
+    {
+        $model = app()->make($this->model());
+        return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
+    }
+
+    public function perPage(): array
+    {
+        return [10, 25, 50, 100];
+    }
+
+    public function defaultSort(): string
+    {
+        return "id|desc";
+    }
+
+    public function canEdit(): bool
+    {
+        return true;
+    }
+
+    public function canEditRow($row): bool
+    {
+        return true;
+    }
+
+    public function canDelete(): bool
+    {
+        return true;
+    }
+
+    public function canDeleteRow($row): bool
+    {
+        return true;
+    }
 }

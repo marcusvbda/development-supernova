@@ -7,12 +7,6 @@
                 </a>
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4">
-                        <div class="relative flex">
-                            <a href="{{ $homeRoute }}"
-                                class="{{ $currentUrl == $homeRoute ? 'bg-gray-300 dark:bg-gray-900' : 'dark:bg-gray-700' }} dark:text-white rounded-md px-3 py-2 text-sm font-medium">
-                                {{ $homeTitle }}
-                            </a>
-                        </div>
                         @foreach ($items as $key => $value)
                             @if (is_string($value))
                                 <div class="relative flex">
@@ -76,10 +70,6 @@
     <!-- Mobile menu, show/hide based on menu state. -->
     <div class="sm:hidden" id="mobile-menu">
         <div class="space-y-1 px-2 pb-3 pt-2">
-            <a href="{{ $homeRoute }}"
-                class="{{ $currentUrl == $homeRoute ? 'dark:bg-gray-900 bg-gray-300' : 'dark:bg-gray-700' }} dark:text-white block rounded-md px-3 py-2 text-base font-medium"
-                aria-current="page">{{ $homeTitle }}</a>
-
             @foreach ($items as $key => $value)
                 @if (is_string($value))
                     <a href="{{ $value }}"

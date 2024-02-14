@@ -9,7 +9,7 @@ class Squads extends Module
 {
     public function subMenu(): string
     {
-        return "Times";
+        return "Time";
     }
 
     public function model(): string
