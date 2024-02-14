@@ -13,19 +13,64 @@ return new class extends Migration
         $this->createAccessGroups();
         $this->createUsers();
         $this->createPermissions();
+        $this->createSquads();
+        $this->createTeams();
+        $this->createCustomers();
         (new StartUpSeeder())->run();
         $aclSeeder = new PermissionSeeder();
         $aclSeeder->makePermissions('Grupos de Acesso', 'access-groups');
         $aclSeeder->makePermissions('Usuários', 'users');
+        $aclSeeder->makePermissions('Squads', 'squads');
+        $aclSeeder->makePermissions('Clientes', 'customer');
+    }
+
+    private function createCustomers()
+    {
+        Schema::create("teams", function (Blueprint $table) {
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+            $table->engine = 'InnoDB';
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    private function createTeams()
+    {
+        Schema::create("customers", function (Blueprint $table) {
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+            $table->engine = 'InnoDB';
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('website')->nullable();
+            $table->string('contact')->nullable();
+            $table->string('email_contact')->nullable();
+            $table->string('phone_contact')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    private function createSquads()
+    {
+        Schema::create("squads", function (Blueprint $table) {
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+            $table->engine = 'InnoDB';
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     private function createPermissions()
     {
-        $this->createTable('access_group_permissions', function (Blueprint $table) {
-            $table = $this->addForeignKey($table, 'access_group_id', 'access_groups', 'id');
-            $table = $this->addForeignKey($table, 'permission_id', 'permissions', 'id');
-        }, ["id" => false, "timestamps" => false, "softDeletes" => false]);
-
         Schema::create("permissions", function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
@@ -34,6 +79,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('key');
             $table->string('type');
+            $table->timestamps();
         });
 
         Schema::create("access_group_permissions", function (Blueprint $table) {
@@ -98,7 +144,16 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists("customer");
+        Schema::dropIfExists("teams");
+        Schema::dropIfExists("squads");
         Schema::dropIfExists("users");
         Schema::dropIfExists("access_groups");
+
+        $aclSeeder = new PermissionSeeder();
+        $aclSeeder->deletePermissionType('Clientes');
+        $aclSeeder->deletePermissionType('Times');
+        $aclSeeder->deletePermissionType('Squads');
+        $aclSeeder->deletePermissionType('Usuários');
     }
 };

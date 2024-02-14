@@ -38,7 +38,7 @@ class Login extends Component
         $model = app()->make($application->userModel());
         $user = $model->where("email", $this->email)->first();
         if (!$user) {
-            $this->addError("email", "Usuáriao não encontrado");
+            $this->addError("email", "Usuário não encontrado");
             return;
         }
         if (!password_verify($this->password, $user->password)) {

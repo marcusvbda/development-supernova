@@ -63,6 +63,7 @@ class Datatable extends Component
     public function loadData()
     {
         $module = $this->getAppModule();
+        // $this->hasResults = $module->getCachedQty() > 0;
         $sort = explode("|", $this->sort);
         $this->perPageOptions = $module->perPage();
         $columns = $module->dataTable();
