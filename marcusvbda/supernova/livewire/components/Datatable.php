@@ -14,6 +14,7 @@ class Datatable extends Component
     public $hasResults;
     public $searchText;
     public $searchable;
+    public $initialized = false;
     public function mount()
     {
         $application = app()->make(config("supernova.application", Application::class));
@@ -23,6 +24,11 @@ class Datatable extends Component
         $this->canCreate = $module->canCreate();
         $this->hasResults = $module->getCachedQty() > 0;
         $this->searchable = true;
+    }
+
+    public function init()
+    {
+        $this->initialized = true;
     }
 
     public function clearSearch()

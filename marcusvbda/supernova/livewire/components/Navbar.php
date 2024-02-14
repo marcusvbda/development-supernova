@@ -22,7 +22,6 @@ class Navbar extends Component
 
     private function makeSettings(): void
     {
-        $modules =  $this->application->getAllModules();
         $this->items = $this->application->menuItems();
         $this->currentUrl = request()->url();
         $this->logo = $this->application->logo();
