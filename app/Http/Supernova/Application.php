@@ -13,6 +13,9 @@ class Application extends SupernovaApplication
 
     public function logo(): string
     {
+        if ($this->darkMode()) {
+            return asset("images/logo-white.svg");
+        }
         return asset("images/logo.svg");
     }
 

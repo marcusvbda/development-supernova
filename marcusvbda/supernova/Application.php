@@ -165,4 +165,30 @@ class Application
     {
         return 60;
     }
+
+    public function menuItems(): array
+    {
+        $modules =  $this->getAllModules();
+        $items = [];
+        foreach ($modules as $module) {
+            if (!$module->menu()) continue;
+            $menu = $module->menu();
+            if (!strpos($menu, ".")) {
+                [$title, $url] =  $this->extractItemDetails($menu);
+                $items[$title] = $url;
+            } else {
+                $menu = explode(".", $menu);
+                [$title, $url] =  $this->extractItemDetails($menu[1]);
+                $items[$menu[0]][$title] = $url;
+            }
+        }
+        return $items;
+    }
+
+    public function extractItemDetails($item)
+    {
+        $url = str_replace("'", "", str_replace("href='", "", str_replace("}", "", explode("{", $item)[1])));
+        $title =  substr($item, 0, strpos($item, "{"));
+        return [$title, $url];
+    }
 }

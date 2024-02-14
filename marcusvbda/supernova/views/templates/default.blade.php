@@ -3,14 +3,15 @@
     $novaApp = app()->make(config('supernova.application', Application::class));
 @endphp
 
-<html class="{{$novaApp->darkMode() ? 'dark' : 'ligth'}}">
+<html class="{{ $novaApp->darkMode() ? 'dark' : 'ligth' }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @include('supernova::templates.scripts.tailwind')
-    <title>@yield('title') - {{ $novaApp->title() }}</title>
+    <title>{{ $novaApp->title() }} | @yield('title')</title>
     <link rel="icon" type="image/x-icon" href="{{ $novaApp->icon() }}" />
+    @include('supernova::templates.styles.styles')
     <style>
         {!! $novaApp->styles() !!}
     </style>
