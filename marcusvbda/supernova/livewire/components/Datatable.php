@@ -3,6 +3,8 @@
 namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
+use Illuminate\Pagination\Cursor;
+use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
 
 class Datatable extends Component
@@ -24,7 +26,21 @@ class Datatable extends Component
     public $perPage;
     public $canDelete = false;
     public $canEdit = false;
+    public $hasPrevCursor = false;
+    public $hasNextCursor = false;
+    public $cursor = null;
+    public $prevCursor = null;
+    public $nextCursor = null;
+    public $currentPage = 1;
+    public $totalPages = 1;
+    public $totalResults = 0;
+
     public function mount()
+    {
+        $this->initializeModule();
+    }
+
+    private function initializeModule()
     {
         $module = $this->getAppModule();
         $this->icon = $module->icon();
@@ -57,14 +73,26 @@ class Datatable extends Component
             $newDirection = $oldDirection == "desc" ? "asc" : "desc";
         }
         $this->sort = "{$newName}|{$newDirection}";
+        $this->cursor = null;
+        $this->loadData();
+    }
+
+    public function setCursor($cursor, $type)
+    {
+        $this->cursor = $cursor;
+        if ($type == "prev") {
+            $this->currentPage--;
+        } else {
+            $this->currentPage++;
+        }
         $this->loadData();
     }
 
     public function loadData()
     {
-        $module = $this->getAppModule();
-        // $this->hasResults = $module->getCachedQty() > 0;
+        $this->initializeModule();
         $sort = explode("|", $this->sort);
+        $module = $this->getAppModule();
         $this->perPageOptions = $module->perPage();
         $columns = $module->dataTable();
         $modelClass = $module->model();
@@ -80,15 +108,27 @@ class Datatable extends Component
             });
         }
         $query = $model->orderBy($sort[0], $sort[1]);
-        $items = $query->paginate($this->perPage);
+        $total = $query->count();
+        $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
+        $this->hasNextCursor = $items->hasMorePages();
+        $this->nextCursor = $this->hasNextCursor  ? $items->nextCursor()->encode() : null;
+        $this->hasPrevCursor = $items->previousCursor() != null;
+        $this->prevCursor = $this->hasPrevCursor ? $items->previousCursor()->encode() : null;
         $this->itemsPage = $this->processItems($items, $columns);
+        $this->totalPages =  ceil($total / $this->perPage);
+        $this->totalResults = $total;
         $this->initialized = true;
     }
 
-    public function updated()
+    public function updated($field)
     {
+        if ($field == "searchText") {
+            $this->currentPage = 1;
+            $this->cursor = null;
+        }
         $this->loadData();
     }
+
 
     private function processItems($items, $columns): array
     {
@@ -111,14 +151,12 @@ class Datatable extends Component
     private function executeAction($action, $item)
     {
         if (is_callable($action)) {
-            $result = $action($item);
-            if ($result !== null && $result !== '') {
-                return $result;
-            }
+            $result = @$action($item);
+            return Blade::render($result ?? " - ");
         } elseif (is_string($action) || is_numeric($action)) {
-            return $action;
+            return Blade::render($action);
         }
-        return " - ";
+        return Blade::render(" - ");
     }
 
     public function clearSearch()

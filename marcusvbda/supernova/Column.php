@@ -7,7 +7,7 @@ class Column
     public $name;
     public $label;
     public $searchable = false;
-    public $align = "right";
+    public $align = "justify-start";
     public $filterable = false;
     public $sortable = false;
     public $width;
@@ -16,6 +16,7 @@ class Column
     public function __construct($name)
     {
         $this->name = $name;
+        $this->label = $name;
         $this->action = fn ($row) => $row->{$name};
     }
 
@@ -39,19 +40,19 @@ class Column
 
     public function alignRight(): Column
     {
-        $this->align = "right";
+        $this->align = "justify-end";
         return $this;
     }
 
     public function alignCenter(): Column
     {
-        $this->align = "center";
+        $this->align = "justify-center";
         return $this;
     }
 
     public function alignLeft(): Column
     {
-        $this->align = "left";
+        $this->align = "justify-start";
         return $this;
     }
 

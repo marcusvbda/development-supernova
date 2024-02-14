@@ -42,10 +42,11 @@
                                 $width = data_get($value, 'width');
                                 $lastColumn = $key === count($columns) - 1;
                                 $showBorder = $hasActions || !$lastColumn;
+                                $align = data_get($value, 'align', 'justify-end');
                             @endphp
                             <th class="@if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
                                 @if ($sortable) wire:click="reloadSort('{{ $name }}','{{ $sort[0] }}','{{ $sort[1] }}')" @endif>
-                                <div class="flex items-center gap-5 justify-end">
+                                <div class="flex items-center gap-5 {{ $align }}">
                                     {!! $label !!}
                                     @if ($sortable && $sort[0] === $name)
                                         <div class="flex gap-3">
@@ -73,7 +74,7 @@
                         @endforeach
                         @if ($hasActions)
                             <th
-                                class="min-w-[100px] p-5 font-medium text-gray-700 border-right border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
+                                class="w-[100px] p-5 font-medium text-gray-700 border-right border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
                                 {{-- action here --}}
                             </th>
                         @endif
@@ -114,10 +115,13 @@
                                     $width = data_get($value, 'width');
                                     $lastColumn = $key === count($columns) - 1;
                                     $showBorder = $hasActions || !$lastColumn;
+                                    $align = data_get($value, 'align', 'justify-end');
                                 @endphp
                                 <td
                                     class="p-4 px-5 text-right font-light text-gray-600 @if ($showBorder) border-r border-gray-200 dark:border-gray-700 @endif dark:text-gray-300">
-                                    {!! $item[$name] !!}
+                                    <div class="w-full flex {{ $align }}">
+                                        {!! $item[$name] !!}
+                                    </div>
                                 </td>
                             @endforeach
 

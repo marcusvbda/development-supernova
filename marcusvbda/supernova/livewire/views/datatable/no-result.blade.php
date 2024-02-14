@@ -8,7 +8,7 @@
         Nenhum registro de {{ strtolower($name[0]) }} encontrado !
     </h4>
     @if ($canCreate)
-        <small class="text-neutral-600">
+        <small class="text-neutral-600 dark:text-gray-500">
             Clique em <strong>'Cadastrar'</strong> para adicionar um novo registro
         </small>
     @endif

@@ -3,6 +3,7 @@
 namespace App\Http\Supernova\Modules;
 
 use App\Models\Permission;
+use marcusvbda\supernova\Column;
 use marcusvbda\supernova\Module;
 
 class Permissions extends Module
@@ -22,9 +23,10 @@ class Permissions extends Module
         return Permission::class;
     }
 
-    // public function dataTable()
-    // {
-    //     $columns = [];
-    //     return $columns;
-    // }
+    public function dataTable(): array
+    {
+        $columns[] = Column::name("id")->searchable()->sortable();
+        $columns[] = Column::name("name")->searchable()->sortable();
+        return $columns;
+    }
 }
