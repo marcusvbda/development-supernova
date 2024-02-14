@@ -21,96 +21,106 @@
                 </div>
             </div>
         </div>
-        @if (count($itemsPage) === 0)
-            <div class="flex align-center justify-center py-20">
-                <span class="text-neutral-700 font-light dark:text-gray-400">Nenhum resultado encontrado ...</span>
-            </div>
-        @else
-            <table class="w-full border-b border-gray-200 dark:border-gray-700">
-                <thead>
-                    <tr class="bg-gray-100 dark:bg-gray-600">
+        <table class="w-full border-b border-gray-200 dark:border-gray-700">
+            <thead>
+                <tr class="bg-gray-100 dark:bg-gray-600">
+                    @php
+                        $_sort = $sort;
+                        $sort = explode('|', $sort);
+                    @endphp
+                    @foreach ($columns as $key => $value)
                         @php
-                            $_sort = $sort;
-                            $sort = explode('|', $sort);
+                            $sortable = data_get($value, 'sortable', false);
+                            $label = data_get($value, 'label', false);
+                            $field = data_get($value, 'name');
+                            $minWidth = data_get($value, 'minWidth');
+                            $width = data_get($value, 'width');
+                            $lastColumn = $key === count($columns) - 1;
+                            $showBorder = $hasActions || !$lastColumn;
+                            $align = data_get($value, 'align', 'justify-end');
                         @endphp
+                        <th class="@if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
+                            @if ($sortable) wire:click="reloadSort('{{ $field }}','{{ $sort[0] }}','{{ $sort[1] }}')" @endif>
+                            <div class="flex items-center gap-5 {{ $align }}">
+                                {!! $label !!}
+                                @if ($sortable && $sort[0] === $field)
+                                    <div class="flex gap-3">
+                                        @if ($sort[1] === 'desc')
+                                            <div class="relative w-[24px] h-[20px]">
+                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </div>
+                                        @else
+                                            <div class="relative w-[24px] h-[20px]">
+                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        </th>
+                    @endforeach
+                    @if ($hasActions)
+                        <th
+                            class="w-[100px] p-5 font-medium text-gray-700 border-right border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
+                            {{-- action here --}}
+                        </th>
+                    @endif
+                </tr>
+                @if ($filterable)
+                    <tr class="bg-indigo-100 dark:bg-indigo-300">
                         @foreach ($columns as $key => $value)
                             @php
-                                $sortable = data_get($value, 'sortable', false);
-                                $label = data_get($value, 'label', false);
-                                $name = data_get($value, 'name');
-                                $minWidth = data_get($value, 'minWidth', '100px');
-                                $width = data_get($value, 'width');
                                 $lastColumn = $key === count($columns) - 1;
                                 $showBorder = $hasActions || !$lastColumn;
-                                $align = data_get($value, 'align', 'justify-end');
+                                $filterType = data_get($value, 'filter_type');
+                                $filterBlade = "supernova-livewire-views::datatable.filters.$filterType";
+                                $field = data_get($value, 'name');
                             @endphp
-                            <th class="@if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
-                                @if ($sortable) wire:click="reloadSort('{{ $name }}','{{ $sort[0] }}','{{ $sort[1] }}')" @endif>
-                                <div class="flex items-center gap-5 {{ $align }}">
-                                    {!! $label !!}
-                                    @if ($sortable && $sort[0] === $name)
-                                        <div class="flex gap-3">
-                                            @if ($sort[1] === 'desc')
-                                                <div class="relative w-[24px] h-[20px]">
-                                                    <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                    </svg>
-                                                </div>
-                                            @else
-                                                <div class="relative w-[24px] h-[20px]">
-                                                    <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
-                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                                    </svg>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </div>
+                            <th
+                                class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-400 align-top @endif p-5">
+                                @if (View::exists($filterBlade))
+                                    @include($filterBlade, ['field' => $field])
+                                @endif
                             </th>
                         @endforeach
                         @if ($hasActions)
                             <th
-                                class="w-[100px] p-5 font-medium text-gray-700 border-right border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
-                                {{-- action here --}}
+                                class="min-w-[100px] p-5 font-medium text-gray-700 border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
+                                {{--  --}}
                             </th>
                         @endif
                     </tr>
-                    @if ($filterable)
-                        <tr class="bg-indigo-100 dark:bg-indigo-300">
-                            @foreach ($columns as $key => $value)
-                                @php
-                                    $sortable = data_get($value, 'sortable', false);
-                                    $label = data_get($value, 'label', false);
-                                    $minWidth = data_get($value, 'minWidth', '100px');
-                                    $width = data_get($value, 'width');
-                                    $lastColumn = $key === count($columns) - 1;
-                                    $showBorder = $hasActions || !$lastColumn;
-                                @endphp
-                                <th
-                                    class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-400 @endif p-5">
-                                </th>
-                            @endforeach
-                            @if ($hasActions)
-                                <th
-                                    class="min-w-[100px] p-5 font-medium text-gray-700 border-r border-gray-200 dark:text-gray-200 dark:border-gray-700">
-                                    {{--  --}}
-                                </th>
-                            @endif
-                        </tr>
-                    @endif
-                </thead>
-                <tbody>
+                @endif
+            </thead>
+            <tbody>
+                @if (count($itemsPage) === 0)
+                    <tr class="bg-white dark:bg-gray-500">
+                        @php
+                            $colspan = count($columns) + ($hasActions ? 1 : 0);
+                        @endphp
+                        <td class="p-4 px-5 text-right font-light text-gray-600 dark:text-gray-300"
+                            colspan="{{ $colspan }}">
+                            <div class="w-full flex">
+                                @include('supernova-livewire-views::datatable.no-result')
+                            </div>
+                        </td>
+                    </tr>
+                @else
                     @foreach ($itemsPage as $i => $item)
                         <tr class="{{ $i % 2 === 1 ? 'bg-gray-100 dark:bg-gray-600' : 'bg-white dark:bg-gray-500' }}">
                             @foreach ($columns as $key => $value)
                                 @php
                                     $sortable = data_get($value, 'sortable', false);
                                     $label = data_get($value, 'label', false);
-                                    $name = data_get($value, 'name');
+                                    $field = data_get($value, 'name');
                                     $minWidth = data_get($value, 'minWidth', '100px');
                                     $width = data_get($value, 'width');
                                     $lastColumn = $key === count($columns) - 1;
@@ -120,7 +130,7 @@
                                 <td
                                     class="p-4 px-5 text-right font-light text-gray-600 @if ($showBorder) border-r border-gray-200 dark:border-gray-700 @endif dark:text-gray-300">
                                     <div class="w-full flex {{ $align }}">
-                                        {!! $item[$name] !!}
+                                        {!! $item[$field] !!}
                                     </div>
                                 </td>
                             @endforeach
@@ -172,9 +182,9 @@
                             @endif
                         </tr>
                     @endforeach
-                </tbody>
-            </table>
-            @include('supernova-livewire-views::datatable.pagination')
-        @endif
+                @endif
+            </tbody>
+        </table>
+        @include('supernova-livewire-views::datatable.pagination')
     @endif
 </div>

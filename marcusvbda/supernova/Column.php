@@ -9,10 +9,12 @@ class Column
     public $searchable = false;
     public $align = "justify-start";
     public $filterable = false;
+    public $filter_type;
     public $sortable = false;
     public $width;
     public $minWidth;
     public $action;
+
     public function __construct($name)
     {
         $this->name = $name;
@@ -56,11 +58,12 @@ class Column
         return $this;
     }
 
-    public function filterable($value = true): Column
+    public function filterable(FILTER_TYPES $type): Column
     {
-        $this->filterable = $value;
-        if ($value && !$this->minWidth) {
-            $this->minWidth("100px");
+        $this->filterable = true;
+        $this->filter_type = $type->value;
+        if (!$this->minWidth) {
+            $this->minWidth("300px");
         }
         return $this;
     }
@@ -83,7 +86,7 @@ class Column
         return $this;
     }
 
-    public function action($value): Column
+    public function callback($value): Column
     {
         $this->action = $value;
         return $this;

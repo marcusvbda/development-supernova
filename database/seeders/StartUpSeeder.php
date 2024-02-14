@@ -21,6 +21,7 @@ class StartUpSeeder extends Seeder
             "name" => "Root",
             "email" => "root",
             "role" =>  "root",
+            "dark_mode" => false,
             "password" => bcrypt("roottoor")
         ]);
     }

@@ -17,7 +17,8 @@ class User extends Authenticatable
     ];
 
     public  $casts = [
-        "avatar" => "array"
+        "avatar" => "array",
+        "dark_mode" => "boolean",
     ];
 
     public function getAvatarImageAttribute()

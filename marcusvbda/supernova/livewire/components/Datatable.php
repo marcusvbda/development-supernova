@@ -6,6 +6,7 @@ use App\Http\Supernova\Application;
 use Illuminate\Pagination\Cursor;
 use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
+use marcusvbda\supernova\FILTER_TYPES;
 
 class Datatable extends Component
 {
@@ -34,6 +35,7 @@ class Datatable extends Component
     public $currentPage = 1;
     public $totalPages = 1;
     public $totalResults = 0;
+    public $filters  = [];
 
     public function mount()
     {
@@ -107,6 +109,22 @@ class Datatable extends Component
                 }
             });
         }
+        $model = $model->where(function ($query) use ($columns) {
+            foreach ($columns as $column) {
+                if ($column->filterable) {
+                    if ($column->filter_type == FILTER_TYPES::MINMAX->value) {
+                        $min = data_get($this->filters, $column->name . "[0]");
+                        $max = data_get($this->filters, $column->name . "[1]");
+                        if ($min) $query->where($column->name, ">=", $min);
+                        if ($max) $query->where($column->name, "<=", $max);
+                    }
+                    if ($column->filter_type == FILTER_TYPES::TEXT->value && @$this->filters[$column->name]) {
+                        $query->where($column->name, "like", "%{$this->filters[$column->name]}%");
+                    };
+                }
+            }
+            return $query;
+        });
         $query = $model->orderBy($sort[0], $sort[1]);
         $total = $query->count();
         $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
@@ -122,13 +140,12 @@ class Datatable extends Component
 
     public function updated($field)
     {
-        if ($field == "searchText") {
+        if (str_starts_with($field, "filters.") || $field === "searchText") {
             $this->currentPage = 1;
             $this->cursor = null;
+            $this->loadData();
         }
-        $this->loadData();
     }
-
 
     private function processItems($items, $columns): array
     {
@@ -157,6 +174,12 @@ class Datatable extends Component
             return Blade::render($action);
         }
         return Blade::render(" - ");
+    }
+
+    public function clearFilter($field)
+    {
+        data_set($this->filters, $field, null);
+        $this->loadData();
     }
 
     public function clearSearch()
