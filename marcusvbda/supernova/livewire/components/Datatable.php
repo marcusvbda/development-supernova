@@ -40,11 +40,12 @@ class Datatable extends Component
         $this->initializeModule();
     }
 
-    public function updateFilterValue($field, $value, $type)
+    public function updateFilterValue($field, $value, $label, $type)
     {
         if (str_starts_with($type, 'multiple')) {
-            if (!in_array($value, $this->filters[$field] ?? [])) {
-                $this->filters[$field][] = $value;
+            $oldValues = data_get($this->filters, $field, []);
+            if (!collect($oldValues)->contains(fn ($item) => $item['value'] == $value)) {
+                $this->filters[$field][] = ['value' => $value, 'label' => $label];
             }
         } else {
             $this->filters[$field] = $value;

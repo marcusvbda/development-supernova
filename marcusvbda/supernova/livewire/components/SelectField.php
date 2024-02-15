@@ -17,10 +17,10 @@ class SelectField extends Component
         return view('supernova-livewire-views::skeleton', ['size' => '38px', 'class' => 'rounded-md']);
     }
 
-    public function change($val)
+    public function change($val, $label)
     {
         if ($this->onchange) {
-            $this->dispatch($this->onchange, $this->field, $val, $this->multiple ? 'multiple-select' : 'select');
+            $this->dispatch($this->onchange, $this->field, $val, $label, $this->multiple ? 'multiple-select' : 'select');
         }
     }
 
