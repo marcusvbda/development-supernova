@@ -107,7 +107,10 @@ class Module
         $tableColumns = $this->getTableColumns();
         $columns = [];
         foreach ($tableColumns as $column) {
-            $columns[] =  Column::name($column)->label($column)->searchable()->sortable()->filterable();
+            $filterType = FILTER_TYPES::TEXT;
+            if ($column === "id") $filterType = FILTER_TYPES::NUMBER_RANGE;
+            if ($column === "created_at" || $column === "updated_at") $filterType = FILTER_TYPES::DATE_RANGE;
+            $columns[] =  Column::name($column)->label($column)->searchable()->sortable()->filterable($filterType);
         }
         return $columns;
     }

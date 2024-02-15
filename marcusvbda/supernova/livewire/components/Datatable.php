@@ -112,15 +112,25 @@ class Datatable extends Component
         $model = $model->where(function ($query) use ($columns) {
             foreach ($columns as $column) {
                 if ($column->filterable) {
-                    if ($column->filter_type == FILTER_TYPES::MINMAX->value) {
+                    $val = data_get($this->filters, $column->name, '');
+                    if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($this->filters, $column->name . "[0]") || data_get($this->filters, $column->name . "[1]"))) {
                         $min = data_get($this->filters, $column->name . "[0]");
                         $max = data_get($this->filters, $column->name . "[1]");
                         if ($min) $query->where($column->name, ">=", $min);
                         if ($max) $query->where($column->name, "<=", $max);
                     }
-                    if ($column->filter_type == FILTER_TYPES::TEXT->value && @$this->filters[$column->name]) {
-                        $query->where($column->name, "like", "%{$this->filters[$column->name]}%");
+                    if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
+                        $query->where($column->name, "like", "%{$val}%");
                     };
+                    if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
+                        $query->whereDate($column->name, $val);
+                    };
+                    if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($this->filters, $column->name . "[0]") || data_get($this->filters, $column->name . "[1]"))) {
+                        $min = data_get($this->filters, $column->name . "[0]");
+                        $max = data_get($this->filters, $column->name . "[1]");
+                        if ($min) $query->whereDate($column->name, ">=", $min);
+                        if ($max) $query->whereDate($column->name, "<=", $max);
+                    }
                 }
             }
             return $query;
@@ -165,15 +175,22 @@ class Datatable extends Component
         return $itemsPage;
     }
 
+    private function placeholderNoData()
+    {
+        return <<<HTML
+            <span>   -   </span>
+        HTML;
+    }
+
     private function executeAction($action, $item)
     {
         if (is_callable($action)) {
             $result = @$action($item);
-            return Blade::render($result ?? " - ");
+            return Blade::render("<span>$result</span>" ?? $this->placeholderNoData());
         } elseif (is_string($action) || is_numeric($action)) {
             return Blade::render($action);
         }
-        return Blade::render(" - ");
+        return Blade::render($this->placeholderNoData());
     }
 
     public function clearFilter($field)

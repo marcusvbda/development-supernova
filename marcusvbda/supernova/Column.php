@@ -63,7 +63,7 @@ class Column
         $this->filterable = true;
         $this->filter_type = $type->value;
         if (!$this->minWidth) {
-            $this->minWidth("300px");
+            $this->minWidth("200px");
         }
         return $this;
     }

@@ -26,8 +26,10 @@ class Permissions extends Module
 
     public function dataTable(): array
     {
-        $columns[] = Column::name("id")->searchable()->sortable()->filterable(FILTER_TYPES::MINMAX);
-        $columns[] = Column::name("name")->searchable()->sortable()->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::name("id")->label("Id")->searchable()->sortable()->width("200px")->filterable(FILTER_TYPES::NUMBER_RANGE);
+        $columns[] = Column::name("name")->label("Nome")->searchable()->sortable()->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::name("type")->label("Tipo")->searchable()->sortable()->filterable(FILTER_TYPES::SELECT);
+        $columns[] = Column::name("created_at")->label("Criado em ...")->searchable()->sortable()->filterable(FILTER_TYPES::DATE_RANGE);
         return $columns;
     }
 }

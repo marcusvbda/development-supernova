@@ -39,7 +39,7 @@
                             $showBorder = $hasActions || !$lastColumn;
                             $align = data_get($value, 'align', 'justify-end');
                         @endphp
-                        <th class="@if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
+                        <th class="font-normal @if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
                             @if ($sortable) wire:click="reloadSort('{{ $field }}','{{ $sort[0] }}','{{ $sort[1] }}')" @endif>
                             <div class="flex items-center gap-5 {{ $align }}">
                                 {!! $label !!}
@@ -85,7 +85,7 @@
                                 $field = data_get($value, 'name');
                             @endphp
                             <th
-                                class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-400 align-top @endif p-5">
+                                class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-400 align-top @endif p-1">
                                 @if (View::exists($filterBlade))
                                     @include($filterBlade, ['field' => $field])
                                 @endif
@@ -128,7 +128,7 @@
                                     $align = data_get($value, 'align', 'justify-end');
                                 @endphp
                                 <td
-                                    class="p-4 px-5 text-right font-light text-gray-600 @if ($showBorder) border-r border-gray-200 dark:border-gray-700 @endif dark:text-gray-300">
+                                    class="p-4 px-5 text-right font-light text-sm text-gray-600 @if ($showBorder) border-r border-gray-200 dark:border-gray-700 @endif dark:text-gray-300">
                                     <div class="w-full flex {{ $align }}">
                                         {!! $item[$field] !!}
                                     </div>
