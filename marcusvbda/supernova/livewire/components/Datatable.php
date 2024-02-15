@@ -34,8 +34,6 @@ class Datatable extends Component
     public $totalPages = 1;
     public $totalResults = 0;
     public $filters  = [];
-    // public $filterOptions = [];
-    // public $filterOptionsLoaded = [];
 
     public function mount()
     {
@@ -44,9 +42,12 @@ class Datatable extends Component
 
     public function updateFilterValue($field, $value, $type)
     {
-        if ($type == "multiple-select") {
+        if (str_starts_with($type, 'multiple')) {
+            if (!in_array($value, $this->filters[$field] ?? [])) {
+                $this->filters[$field][] = $value;
+            }
+        } else {
             $this->filters[$field] = $value;
-            // $this->filters[$field . "[0]"] = $value;
         }
     }
 

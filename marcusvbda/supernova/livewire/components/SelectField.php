@@ -10,7 +10,6 @@ class SelectField extends Component
     public $model;
     public $onchange;
     public $field;
-    public $value;
     public $multiple = false;
     public $loaded = false;
     public function placeholder()
@@ -18,10 +17,10 @@ class SelectField extends Component
         return view('supernova-livewire-views::skeleton', ['size' => '38px', 'class' => 'rounded-md']);
     }
 
-    public function updated()
+    public function change($val)
     {
         if ($this->onchange) {
-            $this->dispatch($this->onchange, $this->field, $this->value, $this->multiple ? 'multiple-select' : 'select');
+            $this->dispatch($this->onchange, $this->field, $val, $this->multiple ? 'multiple-select' : 'select');
         }
     }
 
