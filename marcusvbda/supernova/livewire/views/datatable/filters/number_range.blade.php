@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-2">
     <div class="relative flex-grow focus-within:z-10">
-        <input wire:model.live.debounce.1000ms="filters.{{ $field }}[0]"
+        <input placeholder="Min" wire:model.live.debounce.1000ms="filters.{{ $field }}[0]"
             class="block pl-4 pr-10 w-full rounded-md border font-normal py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50"
             type="number">
         <div class="absolute inset-y-0 right-0 pr-2 flex items-center">
@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="relative flex-grow focus-within:z-10">
-        <input wire:model.live.debounce.1000ms="filters.{{ $field }}[1]"
+        <input placeholder="Max" wire:model.live.debounce.1000ms="filters.{{ $field }}[1]"
             class="block pl-4 pr-10 w-full rounded-md border font-normal py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50"
             type="number">
         <div class="absolute inset-y-0 right-0 pr-2 flex items-center">

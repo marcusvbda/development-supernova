@@ -18,7 +18,6 @@ class Datatable extends Component
     public $filterable;
     public $searchable;
     public $columns;
-    public $initialized = false;
     public $hasActions = true;
     public $sort;
     public $itemsPage = [];
@@ -39,6 +38,11 @@ class Datatable extends Component
     public function mount()
     {
         $this->initializeModule();
+    }
+
+    public function placeholder()
+    {
+        return view('supernova-livewire-views::skeleton', ['size' => '500px']);
     }
 
     private function initializeModule()
@@ -118,7 +122,6 @@ class Datatable extends Component
         $this->itemsPage = $this->processItems($items, $columns);
         $this->totalPages =  ceil($total / $this->perPage);
         $this->totalResults = $total;
-        $this->initialized = true;
     }
 
     private function applyFilters($model, $columns)
@@ -204,6 +207,7 @@ class Datatable extends Component
 
     public function render()
     {
+        $this->loadData();
         return view('supernova-livewire-views::datatable.index');
     }
 }

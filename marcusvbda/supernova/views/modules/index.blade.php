@@ -18,6 +18,7 @@
         @livewire('supernova::datatable', [
             'module' => $module->id(),
             'sort' => $module->defaultSort(),
+            'lazy' => true,
         ])
     </section>
 @endsection
