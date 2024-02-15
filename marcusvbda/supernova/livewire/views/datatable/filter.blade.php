@@ -1,5 +1,5 @@
 <div class="md:w-4/12">
-    <div class="relative flex-grow focus-within:z-10">
+    <div class="relative flex-grow">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" stroke="currentColor" fill="none">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

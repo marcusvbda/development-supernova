@@ -34,10 +34,33 @@ class Datatable extends Component
     public $totalPages = 1;
     public $totalResults = 0;
     public $filters  = [];
+    // public $filterOptions = [];
+    // public $filterOptionsLoaded = [];
 
     public function mount()
     {
         $this->initializeModule();
+    }
+
+    public function updateFilterValue($field, $value, $type)
+    {
+        if ($type == "multiple-select") {
+            $this->filters[$field] = $value;
+            // $this->filters[$field . "[0]"] = $value;
+        }
+    }
+
+    public function getListeners()
+    {
+        $listers = [];
+        $module = $this->getAppModule();
+        $columns = $module->dataTable();
+        foreach ($columns as $column) {
+            if ($column->filterable) {
+                $listers["filters[{$column->name}]:changed"] = "updateFilterValue";
+            }
+        }
+        return $listers;
     }
 
     public function placeholder()
@@ -204,6 +227,12 @@ class Datatable extends Component
         $this->searchText = "";
         $this->loadData();
     }
+
+    // public function loadFilterOptions($field)
+    // {
+    //     sleep(5);
+    //     $this->filterOptionsLoaded[$field] = true;
+    // }
 
     public function render()
     {

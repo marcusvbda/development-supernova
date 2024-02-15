@@ -10,6 +10,7 @@ use marcusvbda\supernova\livewire\components\Dashboard;
 use marcusvbda\supernova\livewire\components\Datatable;
 use marcusvbda\supernova\livewire\components\Login;
 use marcusvbda\supernova\livewire\components\Navbar;
+use marcusvbda\supernova\livewire\components\SelectField;
 
 class Application
 {
@@ -198,5 +199,10 @@ class Application
         $url = str_replace("'", "", str_replace("href='", "", str_replace("}", "", explode("{", $item)[1])));
         $title =  substr($item, 0, strpos($item, "{"));
         return [$title, $url];
+    }
+
+    public function selectField()
+    {
+        return SelectField::class;
     }
 }

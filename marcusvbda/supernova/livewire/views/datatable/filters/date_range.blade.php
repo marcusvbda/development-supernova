@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-2">
-    <div class="relative flex-grow focus-within:z-10">
+    <div class="relative flex-grow">
         <input wire:model.live.debounce.1000ms="filters.{{ $field }}[0]"
             class="block pl-4 pr-10 w-full rounded-md border font-normal py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50"
             type="date">
@@ -14,7 +14,7 @@
             </button>
         </div>
     </div>
-    <div class="relative flex-grow focus-within:z-10">
+    <div class="relative flex-grow">
         <input wire:model.live.debounce.1000ms="filters.{{ $field }}[1]"
             class="block pl-4 pr-10 w-full rounded-md border font-normal py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50"
             type="date">

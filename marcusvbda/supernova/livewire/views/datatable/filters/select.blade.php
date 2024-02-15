@@ -1,5 +1,6 @@
-<div class="flex justify-start">
-    <div class="relative flex-grow focus-within:z-10">
-        select here
-    </div>
-</div>
+@livewire('supernova::select-field', [
+    'field' => $field,
+    'onchange' => "filters[$field]:changed",
+    'multiple' => true,
+])
+{{ json_encode($filters) }}
