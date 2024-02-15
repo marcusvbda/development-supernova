@@ -26,14 +26,10 @@ class SelectField extends Component
 
     public function loadData()
     {
-        sleep(1);
         $this->loaded = true;
         $this->options = [
-            ["value" => 1, "label" => "Option 1"],
-            ["value" => 2, "label" => "Option 2"],
-            ["value" => 3, "label" => "Option 3"],
-            ["value" => 4, "label" => "Option 4"],
-            ["value" => 5, "label" => "Option 5"],
+            ["value" => 'Clientes', "label" => "Clientes"],
+            ["value" => 'Squads', "label" => "Squads"]
         ];
     }
 

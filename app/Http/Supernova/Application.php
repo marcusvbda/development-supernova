@@ -9,7 +9,7 @@ class Application extends SupernovaApplication
 {
     public function darkMode(): bool
     {
-        return Auth::check() && Auth::user()->dark_mode ? true : false;;
+        return Auth::check() && Auth::user()->dark_mode ? true : false;
     }
 
     public function logo(): string

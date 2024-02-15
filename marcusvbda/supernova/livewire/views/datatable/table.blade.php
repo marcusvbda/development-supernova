@@ -78,7 +78,7 @@
                             $field = data_get($value, 'name');
                         @endphp
                         <th
-                            class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-400 align-top @endif p-1">
+                            class="@if ($showBorder) border-r border-indigo-200 dark:border-indigo-500 align-top @endif p-1">
                             @if (View::exists($filterBlade))
                                 @include($filterBlade, ['field' => $field])
                             @endif

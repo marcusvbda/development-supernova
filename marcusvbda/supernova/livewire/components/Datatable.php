@@ -173,10 +173,21 @@ class Datatable extends Component
                         if ($min) $query->whereDate($column->name, ">=", $min);
                         if ($max) $query->whereDate($column->name, "<=", $max);
                     }
+                    if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
+                        $query->whereIn($column->name, collect($val)->map(fn ($item) => $item['value']));
+                    };
                 }
             }
             return $query;
         });
+    }
+
+    public function removeFilter($field, $value)
+    {
+        $oldValues = data_get($this->filters, $field, []);
+        $newValues = collect($oldValues)->filter(fn ($item) => $item['value'] != $value);
+        $this->filters[$field] = $newValues->count() > 0 ? $newValues->toArray() : [];
+        $this->loadData();
     }
 
     public function updated($field)
