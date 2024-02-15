@@ -14,7 +14,6 @@ class Datatable extends Component
     public $icon;
     public $name;
     public $canCreate;
-    public $hasResults;
     public $searchText;
     public $filterable;
     public $searchable;
@@ -48,7 +47,6 @@ class Datatable extends Component
         $this->icon = $module->icon();
         $this->name = $module->name();
         $this->canCreate = $module->canCreate();
-        $this->hasResults = $module->getCachedQty() > 0;
         $this->columns = array_map(function ($row) {
             $row = (array)$row;
             $row["action"] = null;
@@ -109,7 +107,23 @@ class Datatable extends Component
                 }
             });
         }
-        $model = $model->where(function ($query) use ($columns) {
+        $model = $this->applyFilters($model, $columns);
+        $query = $model->orderBy($sort[0], $sort[1]);
+        $total = $query->count();
+        $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
+        $this->hasNextCursor = $items->hasMorePages();
+        $this->nextCursor = $this->hasNextCursor  ? $items->nextCursor()->encode() : null;
+        $this->hasPrevCursor = $items->previousCursor() != null;
+        $this->prevCursor = $this->hasPrevCursor ? $items->previousCursor()->encode() : null;
+        $this->itemsPage = $this->processItems($items, $columns);
+        $this->totalPages =  ceil($total / $this->perPage);
+        $this->totalResults = $total;
+        $this->initialized = true;
+    }
+
+    private function applyFilters($model, $columns)
+    {
+        return $model->where(function ($query) use ($columns) {
             foreach ($columns as $column) {
                 if ($column->filterable) {
                     $val = data_get($this->filters, $column->name, '');
@@ -135,17 +149,6 @@ class Datatable extends Component
             }
             return $query;
         });
-        $query = $model->orderBy($sort[0], $sort[1]);
-        $total = $query->count();
-        $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
-        $this->hasNextCursor = $items->hasMorePages();
-        $this->nextCursor = $this->hasNextCursor  ? $items->nextCursor()->encode() : null;
-        $this->hasPrevCursor = $items->previousCursor() != null;
-        $this->prevCursor = $this->hasPrevCursor ? $items->previousCursor()->encode() : null;
-        $this->itemsPage = $this->processItems($items, $columns);
-        $this->totalPages =  ceil($total / $this->perPage);
-        $this->totalResults = $total;
-        $this->initialized = true;
     }
 
     public function updated($field)
@@ -175,22 +178,16 @@ class Datatable extends Component
         return $itemsPage;
     }
 
-    private function placeholderNoData()
-    {
-        return <<<HTML
-            <span>   -   </span>
-        HTML;
-    }
-
     private function executeAction($action, $item)
     {
+        $module = $this->getAppModule();
         if (is_callable($action)) {
             $result = @$action($item);
-            return Blade::render("<span>$result</span>" ?? $this->placeholderNoData());
+            return Blade::render("<span>$result</span>" ?? $module->placeholderDatatableColumnNoData());
         } elseif (is_string($action) || is_numeric($action)) {
             return Blade::render($action);
         }
-        return Blade::render($this->placeholderNoData());
+        return Blade::render($module->placeholderDatatableColumnNoData());
     }
 
     public function clearFilter($field)

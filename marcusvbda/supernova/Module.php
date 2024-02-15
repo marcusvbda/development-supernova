@@ -102,6 +102,13 @@ class Module
         return true;
     }
 
+    public function placeholderDatatableColumnNoData()
+    {
+        return <<<HTML
+            <span>   -   </span>
+        HTML;
+    }
+
     public function dataTable(): array
     {
         $tableColumns = $this->getTableColumns();
