@@ -9,6 +9,7 @@ class Application extends SupernovaApplication
 {
     public function darkMode(): bool
     {
+        // return true;
         return Auth::check() && Auth::user()->dark_mode ? true : false;
     }
 
