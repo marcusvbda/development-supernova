@@ -23,6 +23,11 @@ class Application
         $this->modulesPath = config("supernova.modules_path", "Http/Supernova/Modules/");
     }
 
+    protected function isApi()
+    {
+        return request()->wantsJson();
+    }
+
     public function homeTitle(): string
     {
         return "Dashboard";

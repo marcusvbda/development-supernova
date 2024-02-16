@@ -157,4 +157,66 @@ class Module
     {
         return true;
     }
+
+    public function getDataTableVisibleColumns()
+    {
+        $columns = $this->dataTable();
+        $columns = collect($columns)->filter(fn ($column) => $column->visible)->toArray();
+        return $columns;
+    }
+
+    public function applyFilters($model, $searchText, $filters, $sort)
+    {
+        $columns = $this->getDataTableVisibleColumns();
+        if ($searchText) {
+            $model = $model->where(function ($query) use ($columns, $searchText) {
+                foreach ($columns as $column) {
+                    if ($column->searchable) {
+                        $query->orWhere($column->name, "like", "%{$searchText}%");
+                    }
+                }
+            });
+        }
+
+        $model = $model->where(function ($query) use ($columns, $filters) {
+            foreach ($columns as $column) {
+                if ($column->filterable) {
+                    $val = data_get($filters, $column->name, '');
+                    if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
+                        $min = data_get($filters, $column->name . "[0]");
+                        $max = data_get($filters, $column->name . "[1]");
+                        if ($min) $query->where($column->name, ">=", $min);
+                        if ($max) $query->where($column->name, "<=", $max);
+                    }
+                    if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
+                        $query->where($column->name, "like", "%{$val}%");
+                    };
+                    if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
+                        $query->whereDate($column->name, $val);
+                    };
+                    if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
+                        $min = data_get($filters, $column->name . "[0]");
+                        $max = data_get($filters, $column->name . "[1]");
+                        if ($min) $query->whereDate($column->name, ">=", $min);
+                        if ($max) $query->whereDate($column->name, "<=", $max);
+                    }
+                    if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
+
+                        $query->where(function ($query) use ($column, $val) {
+                            foreach ($val as $item) {
+                                $query->orWhere($column->name, data_get($item, 'value'));
+                            };
+                        });
+                    };
+                }
+            }
+        });
+
+        return $model->orderBy($sort[0], $sort[1]);
+    }
+
+    protected function isApi()
+    {
+        return request()->wantsJson();
+    }
 }

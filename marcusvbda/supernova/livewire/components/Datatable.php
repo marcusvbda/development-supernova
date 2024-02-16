@@ -6,7 +6,6 @@ use App\Http\Supernova\Application;
 use Illuminate\Pagination\Cursor;
 use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
-use marcusvbda\supernova\FILTER_TYPES;
 
 class Datatable extends Component
 {
@@ -56,7 +55,8 @@ class Datatable extends Component
     public function getListeners()
     {
         $listers = [];
-        $columns = $this->getDataTableVisibleColumns();
+        $module = $this->getAppModule();
+        $columns = $module->getDataTableVisibleColumns();
         foreach ($columns as $column) {
             if ($column->filterable) {
                 $listers["filters[{$column->name}]:changed"] = "updateFilterValue";
@@ -68,14 +68,6 @@ class Datatable extends Component
     public function placeholder()
     {
         return view('supernova-livewire-views::skeleton', ['size' => '500px']);
-    }
-
-    private function getDataTableVisibleColumns()
-    {
-        $module = $this->getAppModule();
-        $columns = $module->dataTable();
-        $columns = collect($columns)->filter(fn ($column) => $column->visible)->toArray();
-        return $columns;
     }
 
     private function initializeModule()
@@ -90,7 +82,7 @@ class Datatable extends Component
             $row["filter_options"] = null;
             $row["filter_options_callback"] = null;
             return $row;
-        }, $this->getDataTableVisibleColumns());
+        }, $module->getDataTableVisibleColumns());
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
         $this->filterable = collect($this->columns)->filter(fn ($row) => $row["filterable"])->count() > 0;
         $this->canDelete = $module->canDelete();
@@ -133,71 +125,21 @@ class Datatable extends Component
         $sort = explode("|", $this->sort);
         $module = $this->getAppModule();
         $this->perPageOptions = $module->perPage();
-        $columns = $this->getDataTableVisibleColumns();
-        $modelClass = $module->model();
-        $model = app()->make($modelClass);
         $this->perPage = in_array($this->perPage, $this->perPageOptions) ? $this->perPage : $this->perPageOptions[0];
-        if ($this->searchText) {
-            $model = $model->where(function ($query) use ($columns) {
-                foreach ($columns as $column) {
-                    if ($column->searchable) {
-                        $query->orWhere($column->name, "like", "%{$this->searchText}%");
-                    }
-                }
-            });
-        }
-        $model = $this->applyFilters($model, $columns);
-        $query = $model->orderBy($sort[0], $sort[1]);
+        $query = $module->applyFilters(app()->make($module->model()), $this->searchText, $this->filters, $sort);
         $total = $query->count();
         $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
         $this->hasNextCursor = $items->hasMorePages();
         $this->nextCursor = $this->hasNextCursor  ? $items->nextCursor()->encode() : null;
         $this->hasPrevCursor = $items->previousCursor() != null;
         $this->prevCursor = $this->hasPrevCursor ? $items->previousCursor()->encode() : null;
-        $this->itemsPage = $this->processItems($items, $columns);
+        $this->itemsPage = $this->processItems($items);
         $this->totalPages =  ceil($total / $this->perPage);
         $this->totalResults = $total;
         $this->hasItems = $total > 0;
         if (!$this->hasItems) {
             $this->hasActions = false;
         }
-    }
-
-    private function applyFilters($model, $columns)
-    {
-        return $model->where(function ($query) use ($columns) {
-            foreach ($columns as $column) {
-                if ($column->filterable) {
-                    $val = data_get($this->filters, $column->name, '');
-                    if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($this->filters, $column->name . "[0]") || data_get($this->filters, $column->name . "[1]"))) {
-                        $min = data_get($this->filters, $column->name . "[0]");
-                        $max = data_get($this->filters, $column->name . "[1]");
-                        if ($min) $query->where($column->name, ">=", $min);
-                        if ($max) $query->where($column->name, "<=", $max);
-                    }
-                    if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
-                        $query->where($column->name, "like", "%{$val}%");
-                    };
-                    if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
-                        $query->whereDate($column->name, $val);
-                    };
-                    if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($this->filters, $column->name . "[0]") || data_get($this->filters, $column->name . "[1]"))) {
-                        $min = data_get($this->filters, $column->name . "[0]");
-                        $max = data_get($this->filters, $column->name . "[1]");
-                        if ($min) $query->whereDate($column->name, ">=", $min);
-                        if ($max) $query->whereDate($column->name, "<=", $max);
-                    }
-                    if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
-                        $query->where(function ($q) use ($column, $val) {
-                            foreach ($val as $item) {
-                                $q->orWhere($column->name, data_get($item, 'value'));
-                            };
-                        });
-                    };
-                }
-            }
-            return $query;
-        });
     }
 
     public function removeFilter($field, $value)
@@ -217,9 +159,10 @@ class Datatable extends Component
         }
     }
 
-    private function processItems($items, $columns): array
+    private function processItems($items): array
     {
         $module = $this->getAppModule();
+        $columns = $module->getDataTableVisibleColumns();
         $itemsPage = [];
         foreach ($items as $item) {
             $rowColumns = [];
