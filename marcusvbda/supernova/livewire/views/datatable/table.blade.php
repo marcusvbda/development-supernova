@@ -1,11 +1,12 @@
-<div
-    class="text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-700 dark:text-gray-50 overflow-x-auto mb-20 relative">
+<div class="text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-700 dark:text-gray-50 overflow-x-auto mb-20 relative"
+    wire:loading.class="opacity-50 overflow-x-hidden">
     <div wire:loading>
-        <div clas="flex items-center justify-center w-full cursor-wait"
-            style="position: absolute;inset: 0;background-color: #7777773f;z-index=9;display:flex;align-items-center;justify-content:center;z-index: 9;">
+        <div class="flex items-center justify-center w-full cursor-wait"
+            style="position: absolute;inset: 0;background-color: #77777729;z-index=9;display:flex;align-items-center;justify-content:center;z-index: 9;">
             <div class="flex flex-col items-center gap-10 my-20 justify-center">
                 <svg class="animate-spin -ml-1 mr-3 h-8 w-8 opacity-30" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        stroke-width="4">
                     </circle>
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
@@ -34,10 +35,10 @@
                     @endphp
                     <th class="font-normal @if ($minWidth) min-w-[{{ $minWidth }}] @endif @if ($width) w-[{{ $width }}] @endif p-5 font-medium text-gray-700 @if ($showBorder) border-right border-r border-gray-200 @endif dark:text-gray-200 dark:border-gray-700 @if ($sortable) cursor-pointer @endif"
                         @if ($sortable) wire:click="reloadSort('{{ $field }}','{{ $sort[0] }}','{{ $sort[1] }}')" @endif>
-                        <div class="flex items-center gap-5 {{ $align }}">
+                        <div class="flex items-center gap-5 w-full {{ $align }}">
                             {!! $label !!}
                             @if ($sortable && $sort[0] === $field)
-                                <div class="flex gap-3">
+                                <div class="flex gap-3 ml-auto">
                                     @if ($sort[1] === 'desc')
                                         <div class="relative w-[24px] h-[20px]">
                                             <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
@@ -47,7 +48,7 @@
                                             </svg>
                                         </div>
                                     @else
-                                        <div class="relative w-[24px] h-[20px]">
+                                        <div class="relative w-[24px] h-[20px] ml-auto">
                                             <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -94,7 +95,7 @@
             @endif
         </thead>
         <tbody>
-            @if (count($itemsPage) === 0)
+            @if (!$hasItems)
                 <tr class="bg-white dark:bg-gray-500">
                     @php
                         $colspan = count($columns) + ($hasActions ? 1 : 0);
@@ -148,6 +149,8 @@
                                     </button>
 
                                     <button type="button" @if (!data_get($item, 'canDelete', false)) disabled @endif
+                                        wire:click="deleteItem('{{ $item['id'] }}')"
+                                        wire:confirm="Excluir este registro ?"
                                         class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white disabled:opacity-20 disabled:cursor-not-allowed">
                                         <div class="w-[15px] h-[15px] relative stroke-red-700 dark:stroke-red-400">
                                             <svg viewBox="0 0 24 24" fill="none">

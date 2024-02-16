@@ -16,6 +16,7 @@ class Column
     public $width;
     public $minWidth;
     public $action;
+    public $visible = true;
 
     public function __construct($name)
     {
@@ -103,6 +104,12 @@ class Column
     public function callback($value): Column
     {
         $this->action = $value;
+        return $this;
+    }
+
+    public function canSee($value): Column
+    {
+        $this->visible = $value;
         return $this;
     }
 }

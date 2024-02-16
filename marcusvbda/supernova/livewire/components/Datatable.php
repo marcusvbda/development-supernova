@@ -34,6 +34,7 @@ class Datatable extends Component
     public $totalPages = 1;
     public $totalResults = 0;
     public $filters  = [];
+    public $hasItems = false;
 
     public function mount()
     {
@@ -55,8 +56,7 @@ class Datatable extends Component
     public function getListeners()
     {
         $listers = [];
-        $module = $this->getAppModule();
-        $columns = $module->dataTable();
+        $columns = $this->getDataTableVisibleColumns();
         foreach ($columns as $column) {
             if ($column->filterable) {
                 $listers["filters[{$column->name}]:changed"] = "updateFilterValue";
@@ -68,6 +68,14 @@ class Datatable extends Component
     public function placeholder()
     {
         return view('supernova-livewire-views::skeleton', ['size' => '500px']);
+    }
+
+    private function getDataTableVisibleColumns()
+    {
+        $module = $this->getAppModule();
+        $columns = $module->dataTable();
+        $columns = collect($columns)->filter(fn ($column) => $column->visible)->toArray();
+        return $columns;
     }
 
     private function initializeModule()
@@ -82,7 +90,7 @@ class Datatable extends Component
             $row["filter_options"] = null;
             $row["filter_options_callback"] = null;
             return $row;
-        }, $module->dataTable());
+        }, $this->getDataTableVisibleColumns());
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
         $this->filterable = collect($this->columns)->filter(fn ($row) => $row["filterable"])->count() > 0;
         $this->canDelete = $module->canDelete();
@@ -125,7 +133,7 @@ class Datatable extends Component
         $sort = explode("|", $this->sort);
         $module = $this->getAppModule();
         $this->perPageOptions = $module->perPage();
-        $columns = $module->dataTable();
+        $columns = $this->getDataTableVisibleColumns();
         $modelClass = $module->model();
         $model = app()->make($modelClass);
         $this->perPage = in_array($this->perPage, $this->perPageOptions) ? $this->perPage : $this->perPageOptions[0];
@@ -149,6 +157,10 @@ class Datatable extends Component
         $this->itemsPage = $this->processItems($items, $columns);
         $this->totalPages =  ceil($total / $this->perPage);
         $this->totalResults = $total;
+        $this->hasItems = $total > 0;
+        if (!$this->hasItems) {
+            $this->hasActions = false;
+        }
     }
 
     private function applyFilters($model, $columns)
@@ -247,15 +259,14 @@ class Datatable extends Component
         $this->loadData();
     }
 
-    // public function loadFilterOptions($field)
-    // {
-    //     sleep(5);
-    //     $this->filterOptionsLoaded[$field] = true;
-    // }
-
     public function render()
     {
         $this->loadData();
         return view('supernova-livewire-views::datatable.index');
+    }
+
+    public function deleteRow($id)
+    {
+        dd("delete row", $id);
     }
 }
