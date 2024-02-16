@@ -6,7 +6,7 @@
 @section('content')
     @livewire('supernova::breadcrumb')
     @php
-        $metricCards = $module->metricsCards();
+        $metricCards = $module->metrics();
     @endphp
     @if (count($metricCards))
         <div class="grid lg:grid-cols-3 md:grid-cols-3 gap-3 mt-5 mb-3">

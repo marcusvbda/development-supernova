@@ -21,7 +21,7 @@ class Module
         cache()->forget($this->getCacheQtyKey());
     }
 
-    public function getCachedQty()
+    public function getCachedQty(): int
     {
         $cacheTime = 60 * 24;
         return cache()->remember($this->getCacheQtyKey(), $cacheTime, function () {
@@ -76,7 +76,7 @@ class Module
         return $sub ? "$sub.$menu{href='$url'}" : "$menu{href='$url'}";
     }
 
-    public function metricsCards(): array
+    public function metrics(): array
     {
         $moduleId = $this->id();
         $cards[] = <<<BLADE
@@ -87,9 +87,9 @@ class Module
         return $cards;
     }
 
-    public function dashboardCards(): array
+    public function dashboardMetrics(): array
     {
-        return $this->metricsCards();
+        return $this->metrics();
     }
 
     public function icon(): ?string
@@ -108,7 +108,7 @@ class Module
         return true;
     }
 
-    public function placeholderDatatableColumnNoData()
+    public function placeholderDatatableColumnNoData(): string
     {
         return <<<HTML
             <span>   -   </span>
@@ -164,14 +164,14 @@ class Module
         return true;
     }
 
-    public function getDataTableVisibleColumns()
+    public function getDataTableVisibleColumns(): array
     {
         $columns = $this->dataTable();
         $columns = collect($columns)->filter(fn ($column) => $column->visible)->toArray();
         return $columns;
     }
 
-    public function applyFilters($model, $searchText, $filters, $sort)
+    public function applyFilters($model, $searchText, $filters, $sort): mixed
     {
         $columns = $this->getDataTableVisibleColumns();
         if ($searchText) {
@@ -221,8 +221,20 @@ class Module
         return $model->orderBy($sort[0], $sort[1]);
     }
 
-    protected function isApi()
+    protected function isApi(): bool
     {
         return request()->wantsJson();
+    }
+
+    public function createBtnText(): string
+    {
+        $name = $this->name();
+        return "Criar " . strtolower($name[0]);
+    }
+
+    public function deleteRow($row): void
+    {
+        dd("delete row", $row);
+        $row->delete();
     }
 }

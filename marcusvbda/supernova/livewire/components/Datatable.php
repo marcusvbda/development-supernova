@@ -34,6 +34,8 @@ class Datatable extends Component
     public $totalResults = 0;
     public $filters  = [];
     public $hasItems = false;
+    public $btnCreateText = "Create";
+    public $moduleUrl = "/";
 
     public function mount()
     {
@@ -88,6 +90,9 @@ class Datatable extends Component
         $this->canDelete = $module->canDelete();
         $this->canEdit = $module->canEdit();
         $this->hasActions = $this->canDelete || $this->canEdit;
+        $this->btnCreateText = $module->createBtnText();
+        $this->moduleUrl = route("supernova.modules.index", $this->module);
+        $this->perPageOptions = $module->perPage();
     }
 
     private function getAppModule()
@@ -124,7 +129,6 @@ class Datatable extends Component
         $this->initializeModule();
         $sort = explode("|", $this->sort);
         $module = $this->getAppModule();
-        $this->perPageOptions = $module->perPage();
         $this->perPage = in_array($this->perPage, $this->perPageOptions) ? $this->perPage : $this->perPageOptions[0];
         $query = $module->applyFilters(app()->make($module->model()), $this->searchText, $this->filters, $sort);
         $total = $query->count();
@@ -172,6 +176,7 @@ class Datatable extends Component
                 $rowColumns["canEdit"] = $module->canEditRow($item) && $this->canEdit;
                 $rowColumns["canDelete"] = $module->canDeleteRow($item) && $this->canDelete;
             }
+            $rowColumns["_id"] = @$item->id;
             $itemsPage[] = $rowColumns;
         }
 
@@ -210,6 +215,8 @@ class Datatable extends Component
 
     public function deleteRow($id)
     {
-        dd("delete row", $id);
+        $module = $this->getAppModule();
+        $module->deleteRow($id);
+        $this->loadData();
     }
 }

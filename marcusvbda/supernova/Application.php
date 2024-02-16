@@ -63,7 +63,7 @@ class Application
 
     public function logo(): string
     {
-        return "https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500";
+        return "https://tailwindui.com/img/logos/mark.svg?color=blue&shade=500";
     }
 
     public function title(): string
@@ -153,13 +153,13 @@ class Application
         return CounterCard::class;
     }
 
-    public function dashboardCards()
+    public function dashboardMetrics()
     {
         $modules = $this->getAllModules();
         $cards = [];
 
         foreach ($modules as $module) {
-            $moduleCards = $module->dashboardCards();
+            $moduleCards = $module->dashboardMetrics();
             $cards = array_merge($cards, $moduleCards);
         }
 
@@ -168,7 +168,7 @@ class Application
 
     public function dashboardContent()
     {
-        $cards = $this->dashboardCards();
+        $cards = $this->dashboardMetrics();
         return compact("cards");
     }
 

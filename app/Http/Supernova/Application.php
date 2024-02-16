@@ -26,13 +26,13 @@ class Application extends SupernovaApplication
         return asset("images/favicon.png");
     }
 
-    public function dashboardCards()
+    public function dashboardMetrics()
     {
         $modules = ["projects", "customers", "squads", "teams"];
         $cards = [];
 
         foreach ($modules as $module) {
-            $cards = array_merge($cards, $this->getModule($module)->dashboardCards());
+            $cards = array_merge($cards, $this->getModule($module)->dashboardMetrics());
         }
 
         return $cards;

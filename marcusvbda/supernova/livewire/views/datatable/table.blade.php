@@ -1,5 +1,5 @@
-<div
-    class=" mb-20 bg-gray-50 dark:bg-gray-600  rounded-lg text-gray-700 border border-gray-200 dark:border-gray-700 dark:text-gray-50">
+<div class=" mb-20 bg-gray-50 dark:bg-gray-600  rounded-lg text-gray-700 border border-gray-200 dark:border-gray-700 dark:text-gray-50"
+    x-data="datatable">
     <div class=" overflow-x-auto relative" wire:loading.class="opacity-50 overflow-x-hidden">
         <div wire:loading>
             <div class="flex items-center justify-center w-full cursor-wait"
@@ -42,7 +42,7 @@
                                     <div class="flex gap-3 ml-auto">
                                         @if ($sort[1] === 'desc')
                                             <div class="relative w-[24px] h-[20px]">
-                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
+                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-blue-600 dark:text-blue-200 stroke-current"
                                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -50,7 +50,7 @@
                                             </div>
                                         @else
                                             <div class="relative w-[24px] h-[20px] ml-auto">
-                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-indigo-600 dark:text-indigo-200 stroke-current"
+                                                <svg class="h-5 w-5 stroke-current h-6 w-6 text-blue-600 dark:text-blue-200 stroke-current"
                                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" d="M5 15l7-7 7 7"></path>
@@ -70,7 +70,7 @@
                     @endif
                 </tr>
                 @if ($filterable)
-                    <tr class="bg-indigo-100 dark:bg-indigo-300">
+                    <tr class="bg-blue-100 dark:bg-blue-300">
                         @foreach ($columns as $key => $value)
                             @php
                                 $lastColumn = $key === count($columns) - 1;
@@ -80,7 +80,7 @@
                                 $field = data_get($value, 'name');
                             @endphp
                             <th
-                                class="@if ($field === 'id')  @endif @if ($showBorder) border-r border-indigo-200 dark:border-indigo-500 @endif align-top p-1">
+                                class="@if ($field === 'id')  @endif @if ($showBorder) border-r border-blue-200 dark:border-blue-500 @endif align-top p-1">
                                 @if (View::exists($filterBlade))
                                     @include($filterBlade, ['field' => $field])
                                 @endif
@@ -136,9 +136,10 @@
                                     <div class="inline-flex rounded-md shadow-sm" role="group">
 
                                         <button type="button" @if (!data_get($item, 'canEdit', false)) disabled @endif
+                                            x-on:click="editClick('{{ $item['_id'] }}')"
                                             class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white disabled:opacity-20 disabled:cursor-not-allowed">
                                             <div
-                                                class="w-[15px] h-[15px] relative stroke-indigo-800 dark:stroke-indigo-300">
+                                                class="w-[15px] h-[15px] relative stroke-blue-800 dark:stroke-blue-300">
                                                 <svg viewBox="0 0 24 24" fill="none">
                                                     <path
                                                         d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z"
@@ -153,7 +154,7 @@
                                         </button>
 
                                         <button type="button" @if (!data_get($item, 'canDelete', false)) disabled @endif
-                                            wire:click="deleteItem('{{ $item['id'] }}')"
+                                            wire:click="deleteRow('{{ $item['_id'] }}')"
                                             wire:confirm="Excluir este registro ?"
                                             class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white disabled:opacity-20 disabled:cursor-not-allowed">
                                             <div class="w-[15px] h-[15px] relative stroke-red-700 dark:stroke-red-400">
@@ -186,3 +187,12 @@
     </div>
     @include('supernova-livewire-views::datatable.pagination')
 </div>
+@script
+    <script>
+        Alpine.data('datatable', () => ({
+            editClick(id) {
+                window.location.href = `{{ $moduleUrl }}/${id}/edit`;
+            }
+        }));
+    </script>
+@endscript

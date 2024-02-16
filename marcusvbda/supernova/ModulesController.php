@@ -15,6 +15,21 @@ class ModulesController extends Controller
         $this->application = app()->make(config("supernova.application", Application::class));
     }
 
+    public function edit($module, $id)
+    {
+        $module = $this->application->getModule($module);
+        if (!$module->canEdit()) abort(403);
+        $target = $module->model()::findOrFail($id);
+        dd("edit page", $target);
+    }
+
+    public function create($module): View
+    {
+        $module = $this->application->getModule($module);
+        if (!$module->canCreate()) abort(403);
+        dd("create page");
+    }
+
     public function index($module): View
     {
         $module = $this->application->getModule($module);

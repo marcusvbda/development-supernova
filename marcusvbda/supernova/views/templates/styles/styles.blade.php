@@ -35,8 +35,8 @@
     }
 
     .dark .table-column-fixed.filter {
-        box-shadow: 1px 0px 0px 0px ##6366F1 inset;
-        -webkit-box-shadow: 1px 0px 0px 0px #6366F1 inset;
-        -moz-box-shadow: 1px 0px 0px 0px #6366F1 inset;
+        box-shadow: 1px 0px 0px 0px #3B82F6 inset;
+        -webkit-box-shadow: 1px 0px 0px 0px #3B82F6 inset;
+        -moz-box-shadow: 1px 0px 0px 0px #3B82F6 inset;
     }
 </style>
