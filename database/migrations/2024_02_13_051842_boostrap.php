@@ -16,12 +16,26 @@ return new class extends Migration
         $this->createSquads();
         $this->createTeams();
         $this->createCustomers();
+        $this->createProjects();
         (new StartUpSeeder())->run();
         $aclSeeder = new PermissionSeeder();
         $aclSeeder->makePermissions('Grupos de Acesso', 'access-groups');
         $aclSeeder->makePermissions('Usuários', 'users');
         $aclSeeder->makePermissions('Squads', 'squads');
         $aclSeeder->makePermissions('Clientes', 'customer');
+    }
+
+    private function createProjects()
+    {
+        Schema::create("projects", function (Blueprint $table) {
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+            $table->engine = 'InnoDB';
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     private function createCustomers()

@@ -10,6 +10,8 @@ class Column
     public $align = "justify-start";
     public $filterable = false;
     public $filter_type;
+    public $filter_options = [];
+    public $filter_options_callback;
     public $sortable = false;
     public $width;
     public $minWidth;
@@ -65,6 +67,18 @@ class Column
         if (!$this->minWidth) {
             $this->minWidth("200px");
         }
+        return $this;
+    }
+
+    public function filterOptions($options): Column
+    {
+        $this->filter_options = $options;
+        return $this;
+    }
+
+    public function filterOptionsCallback($callback): Column
+    {
+        $this->filter_options_callback = $callback;
         return $this;
     }
 

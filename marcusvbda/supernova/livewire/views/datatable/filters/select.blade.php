@@ -2,6 +2,8 @@
     'field' => $field,
     'onchange' => "filters[$field]:changed",
     'multiple' => true,
+    'module' => $module,
+    'type' => 'datatable_filter',
 ])
 @php
     $selectedOptions = data_get($filters, $field, []);

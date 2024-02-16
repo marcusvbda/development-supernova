@@ -79,6 +79,8 @@ class Datatable extends Component
         $this->columns = array_map(function ($row) {
             $row = (array)$row;
             $row["action"] = null;
+            $row["filter_options"] = null;
+            $row["filter_options_callback"] = null;
             return $row;
         }, $module->dataTable());
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
@@ -174,7 +176,11 @@ class Datatable extends Component
                         if ($max) $query->whereDate($column->name, "<=", $max);
                     }
                     if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
-                        $query->whereIn($column->name, collect($val)->map(fn ($item) => $item['value']));
+                        $query->where(function ($q) use ($column, $val) {
+                            foreach ($val as $item) {
+                                $q->orWhere($column->name, data_get($item, 'value'));
+                            };
+                        });
                     };
                 }
             }
@@ -222,7 +228,7 @@ class Datatable extends Component
         $module = $this->getAppModule();
         if (is_callable($action)) {
             $result = @$action($item);
-            return Blade::render("<span>$result</span>" ?? $module->placeholderDatatableColumnNoData());
+            return Blade::render($result ? "<span>$result</span>" : $module->placeholderDatatableColumnNoData());
         } elseif (is_string($action) || is_numeric($action)) {
             return Blade::render($action);
         }

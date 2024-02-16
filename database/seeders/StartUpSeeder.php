@@ -17,12 +17,15 @@ class StartUpSeeder extends Seeder
 
     protected function createUsers()
     {
+        $now = now();
         User::insert([
             "name" => "Root",
             "email" => "root",
             "role" =>  "root",
             "dark_mode" => false,
-            "password" => bcrypt("roottoor")
+            "password" => bcrypt("roottoor"),
+            "created_at" => $now,
+            "updated_at" => $now
         ]);
     }
 }
