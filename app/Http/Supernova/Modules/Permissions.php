@@ -24,20 +24,20 @@ class Permissions extends Module
         return Permission::class;
     }
 
-    // public function dataTable(): array
-    // {
-    //     $columns[] = Column::name("id")->label("Id")->width("200px")
-    //         ->searchable()->sortable()
-    //         ->filterable(FILTER_TYPES::NUMBER_RANGE);
-    //     $columns[] = Column::name("name")->label("Nome")
-    //         ->searchable()->sortable()
-    //         ->filterable(FILTER_TYPES::TEXT);
-    //     $columns[] = Column::name("type")->label("Tipo")
-    //         ->searchable()->sortable()
-    //         ->filterable(FILTER_TYPES::SELECT)
-    //         ->filterOptionsCallback(function ($model) {
-    //             return $model->groupBy('type')->select(["type as value", "type as label"])->get()->toArray();
-    //         });
-    //     return $columns;
-    // }
+    public function dataTable(): array
+    {
+        $columns[] = Column::name("id")->label("Id")->width("200px")
+            ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::NUMBER_RANGE);
+        $columns[] = Column::name("name")->label("Nome")
+            ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::name("type")->label("Tipo")
+            ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::SELECT)
+            ->filterOptionsCallback(function ($model) {
+                return $model->groupBy('type')->select(["type as value", "type as label"])->get()->toArray();
+            });
+        return $columns;
+    }
 }

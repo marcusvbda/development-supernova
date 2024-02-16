@@ -16,7 +16,7 @@ class Users extends Module
 
     public function name(): array
     {
-        return ['Diwer', 'Diwers'];
+        return ['Usuário', 'Usuários'];
     }
 
     public function model(): string

@@ -4,17 +4,11 @@ namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
 use Livewire\Component;
-// use ResourcesHelpers;
 
 class CounterCard extends Component
 {
     public $module;
     public $readyToLoad = false;
-
-    public function redirectTo()
-    {
-        return redirect(route("supernova.modules.index", $this->module));
-    }
 
     public function loadData()
     {
@@ -41,10 +35,10 @@ class CounterCard extends Component
         if ($this->readyToLoad == true) {
             $content = $module->getCachedQty();
             $cardCounterReloadTime = $application->cardCounterReloadTime();
-            $actions = "wire:poll.{$cardCounterReloadTime}s wire:click='redirectTo'";
+            $actions = "wire:poll.{$cardCounterReloadTime}s";
         }
         return <<<BLADE
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full cursor-pointer"  wire:init="loadData" $actions>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm w-full"  wire:init="loadData" $actions>
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-50 mb-3">
                     $name
                 </h2>

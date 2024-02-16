@@ -7,11 +7,11 @@ use Livewire\Component;
 
 class Dashboard extends Component
 {
-    private function renderCounters($counters)
+    private function renderCards($cards)
     {
-        $columns = implode("", $counters);
+        $columns = implode("", $cards);
         $content = <<<HTML
-            <div class="grid lg:grid-cols-5 md:grid-cols-3 gap-3">
+            <div class="grid lg:grid-cols-4 md:grid-cols-3 gap-3">
                 $columns
             </div>
         HTML;
@@ -22,11 +22,11 @@ class Dashboard extends Component
     {
         $application = app()->make(config("supernova.application", Application::class));
         $metrics = $application->dashboardContent();
-        $counterContent = $this->renderCounters(data_get($metrics, "counters", []));
+        $cardsContent = $this->renderCards(data_get($metrics, "cards", []));
 
         return <<<BLADE
            <section class="flex flex-col gap-8">
-                $counterContent
+                $cardsContent
             </section>
         BLADE;
     }

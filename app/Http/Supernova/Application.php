@@ -26,14 +26,16 @@ class Application extends SupernovaApplication
         return asset("images/favicon.png");
     }
 
-    public function dashboardCounters()
+    public function dashboardCards()
     {
-        $counters[] = $this->getModule("users")->dashboardCounterCard();
-        $counters[] = $this->getModule("projects")->dashboardCounterCard();
-        $counters[] = $this->getModule("customers")->dashboardCounterCard();
-        $counters[] = $this->getModule("squads")->dashboardCounterCard();
-        $counters[] = $this->getModule("teams")->dashboardCounterCard();
-        return $counters;
+        $modules = ["projects", "customers", "squads", "teams"];
+        $cards = [];
+
+        foreach ($modules as $module) {
+            $cards = array_merge($cards, $this->getModule($module)->dashboardCards());
+        }
+
+        return $cards;
     }
 
     public function menuItems(): array

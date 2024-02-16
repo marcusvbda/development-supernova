@@ -76,14 +76,20 @@ class Module
         return $sub ? "$sub.$menu{href='$url'}" : "$menu{href='$url'}";
     }
 
-    public function dashboardCounterCard(): ?string
+    public function metricsCards(): array
     {
         $moduleId = $this->id();
-        return <<<BLADE
-            @livewire('supernova::counter-card',[
+        $cards[] = <<<BLADE
+        @livewire('supernova::counter-card',[
                 'module' => '$moduleId',
             ])
         BLADE;
+        return $cards;
+    }
+
+    public function dashboardCards(): array
+    {
+        return $this->metricsCards();
     }
 
     public function icon(): ?string

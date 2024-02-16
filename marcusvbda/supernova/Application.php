@@ -153,24 +153,23 @@ class Application
         return CounterCard::class;
     }
 
-    public function dashboardCounters()
+    public function dashboardCards()
     {
         $modules = $this->getAllModules();
-        $counters = [];
+        $cards = [];
+
         foreach ($modules as $module) {
-            $counter = $module->dashboardCounterCard();
-            if ($counter) {
-                $counters[] = $counter;
-            }
+            $moduleCards = $module->dashboardCards();
+            $cards = array_merge($cards, $moduleCards);
         }
 
-        return $counters;
+        return $cards;
     }
 
     public function dashboardContent()
     {
-        $counters = $this->dashboardCounters();
-        return compact("counters");
+        $cards = $this->dashboardCards();
+        return compact("cards");
     }
 
     public function cardCounterReloadTime(): int
