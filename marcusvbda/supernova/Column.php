@@ -17,6 +17,7 @@ class Column
     public $minWidth;
     public $action;
     public $visible = true;
+    public $filterOptionsLimit;
 
     public function __construct($name)
     {
@@ -61,12 +62,15 @@ class Column
         return $this;
     }
 
-    public function filterable(FILTER_TYPES $type): Column
+    public function filterable(FILTER_TYPES $type, $filterOptionsLimit = null): Column
     {
         $this->filterable = true;
         $this->filter_type = $type->value;
         if (!$this->minWidth) {
             $this->minWidth("200px");
+        }
+        if ($type === FILTER_TYPES::SELECT) {
+            $this->filterOptionsLimit = $filterOptionsLimit;
         }
         return $this;
     }

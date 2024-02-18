@@ -34,7 +34,7 @@ class Permissions extends Module
             ->filterable(FILTER_TYPES::TEXT);
         $columns[] = Column::name("type")->label("Tipo")
             ->searchable()->sortable()
-            ->filterable(FILTER_TYPES::SELECT)
+            ->filterable(FILTER_TYPES::SELECT, 3)
             ->filterOptionsCallback(function ($model) {
                 return $model->groupBy('type')->select(["type as value", "type as label"])->get()->toArray();
             });

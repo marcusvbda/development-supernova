@@ -30,6 +30,14 @@ class ModulesController extends Controller
         dd("create page");
     }
 
+    public function details($module, $id): View
+    {
+        $module = $this->application->getModule($module);
+        if (!$module->canViewIndex()) abort(403);
+        $target = $module->model()::findOrFail($id);
+        dd("details page", $target);
+    }
+
     public function index($module): View
     {
         $module = $this->application->getModule($module);

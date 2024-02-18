@@ -1,13 +1,18 @@
-@livewire('supernova::select-field', [
-    'field' => $field,
-    'onchange' => "filters[$field]:changed",
-    'multiple' => true,
-    'module' => $module,
-    'type' => 'datatable_filter',
-])
 @php
     $selectedOptions = data_get($filters, $field, []);
 @endphp
+<div class="relative">
+    @if ($filterOptionsLimit && $filterOptionsLimit <= count($selectedOptions))
+        <div class="absolute inset-0 cursor-not-allowed z-1 bg-black opacity-5 rounded-md"></div>
+    @endif
+    @livewire('supernova::select-field', [
+        'field' => $field,
+        'onchange' => "filters[$field]:changed",
+        'multiple' => true,
+        'module' => $module,
+        'type' => 'datatable_filter',
+    ])
+</div>
 @if (count($selectedOptions) > 0)
     <div class="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1 my-2">
         @foreach ($selectedOptions as $selected)

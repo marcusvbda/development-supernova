@@ -14,29 +14,30 @@
 
     .table-column-fixed {
         position: sticky;
-        right: 0;
+        left: 0;
         z-index: 1;
         background-color: inherit;
-        box-shadow: 1px 0px 0px 0px #E4E7EB inset;
-        -webkit-box-shadow: 1px 0px 0px 0px #E4E7EB inset;
-        -moz-box-shadow: 1px 0px 0px 0px #E4E7EB inset;
+        box-shadow: -1px 0px 0px 0px #E4E7EB inset;
+        -webkit-box-shadow: -1px 0px 0px 0px #E4E7EB inset;
+        -moz-box-shadow: -1px 0px 0px 0px #E4E7EB inset;
+        border-right: unset;
     }
 
     .table-column-fixed.filter {
-        box-shadow: 1px 0px 0px 0px #C7D2FD inset;
-        -webkit-box-shadow: 1px 0px 0px 0px #C7D2FD inset;
-        -moz-box-shadow: 1px 0px 0px 0px #C7D2FD inset;
+        box-shadow: -1px 0px 0px 0px #C7D2FD inset;
+        -webkit-box-shadow: -1px 0px 0px 0px #C7D2FD inset;
+        -moz-box-shadow: -1px 0px 0px 0px #C7D2FD inset;
     }
 
     .dark .table-column-fixed {
-        box-shadow: 1px 0px 0px 0px #374151 inset;
-        -webkit-box-shadow: 1px 0px 0px 0px #374151 inset;
-        -moz-box-shadow: 1px 0px 0px 0px #374151 inset;
+        box-shadow: -1px 0px 0px 0px #374151 inset;
+        -webkit-box-shadow: -1px 0px 0px 0px #374151 inset;
+        -moz-box-shadow: -1px 0px 0px 0px #374151 inset;
     }
 
     .dark .table-column-fixed.filter {
-        box-shadow: 1px 0px 0px 0px #3B82F6 inset;
-        -webkit-box-shadow: 1px 0px 0px 0px #3B82F6 inset;
-        -moz-box-shadow: 1px 0px 0px 0px #3B82F6 inset;
+        box-shadow: -1px 0px 0px 0px #3B82F6 inset;
+        -webkit-box-shadow: -1px 0px 0px 0px #3B82F6 inset;
+        -moz-box-shadow: -1px 0px 0px 0px #3B82F6 inset;
     }
 </style>

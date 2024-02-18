@@ -231,10 +231,4 @@ class Module
         $name = $this->name();
         return "Criar " . strtolower($name[0]);
     }
-
-    public function deleteRow($row): void
-    {
-        dd("delete row", $row);
-        $row->delete();
-    }
 }

@@ -17,13 +17,10 @@ class Datatable extends Component
     public $filterable;
     public $searchable;
     public $columns;
-    public $hasActions = true;
     public $sort;
     public $itemsPage = [];
     public $perPageOptions = [];
     public $perPage;
-    public $canDelete = false;
-    public $canEdit = false;
     public $hasPrevCursor = false;
     public $hasNextCursor = false;
     public $cursor = null;
@@ -87,9 +84,6 @@ class Datatable extends Component
         }, $module->getDataTableVisibleColumns());
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
         $this->filterable = collect($this->columns)->filter(fn ($row) => $row["filterable"])->count() > 0;
-        $this->canDelete = $module->canDelete();
-        $this->canEdit = $module->canEdit();
-        $this->hasActions = $this->canDelete || $this->canEdit;
         $this->btnCreateText = $module->createBtnText();
         $this->moduleUrl = route("supernova.modules.index", $this->module);
         $this->perPageOptions = $module->perPage();
@@ -141,9 +135,6 @@ class Datatable extends Component
         $this->totalPages =  ceil($total / $this->perPage);
         $this->totalResults = $total;
         $this->hasItems = $total > 0;
-        if (!$this->hasItems) {
-            $this->hasActions = false;
-        }
     }
 
     public function removeFilter($field, $value)
@@ -173,8 +164,6 @@ class Datatable extends Component
             foreach ($columns as $column) {
                 $action = $column->action;
                 $rowColumns[$column->name] = $this->executeAction($action, $item);
-                $rowColumns["canEdit"] = $module->canEditRow($item) && $this->canEdit;
-                $rowColumns["canDelete"] = $module->canDeleteRow($item) && $this->canDelete;
             }
             $rowColumns["_id"] = @$item->id;
             $itemsPage[] = $rowColumns;
@@ -211,12 +200,5 @@ class Datatable extends Component
     {
         $this->loadData();
         return view('supernova-livewire-views::datatable.index');
-    }
-
-    public function deleteRow($id)
-    {
-        $module = $this->getAppModule();
-        $module->deleteRow($id);
-        $this->loadData();
     }
 }
