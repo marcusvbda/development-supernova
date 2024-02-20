@@ -8,6 +8,7 @@ use marcusvbda\supernova\livewire\components\Breadcrumb;
 use marcusvbda\supernova\livewire\components\CounterCard;
 use marcusvbda\supernova\livewire\components\Dashboard;
 use marcusvbda\supernova\livewire\components\Datatable;
+use marcusvbda\supernova\livewire\components\Details;
 use marcusvbda\supernova\livewire\components\Login;
 use marcusvbda\supernova\livewire\components\Navbar;
 use marcusvbda\supernova\livewire\components\SelectField;
@@ -117,6 +118,11 @@ class Application
     public function datatable(): string
     {
         return Datatable::class;
+    }
+
+    public function details(): string
+    {
+        return Details::class;
     }
 
     public function UserModel(): string

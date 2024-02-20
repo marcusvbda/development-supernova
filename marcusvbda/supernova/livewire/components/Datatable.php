@@ -34,11 +34,6 @@ class Datatable extends Component
     public $btnCreateText = "Create";
     public $moduleUrl = "/";
 
-    public function mount()
-    {
-        $this->initializeModule();
-    }
-
     public function updateFilterValue($field, $value, $label, $type)
     {
         if (str_starts_with($type, 'multiple')) {
@@ -72,14 +67,15 @@ class Datatable extends Component
     private function initializeModule()
     {
         $module = $this->getAppModule();
-        $this->icon = $module->icon();
         $this->name = $module->name();
         $this->canCreate = $module->canCreate();
         $this->columns = array_map(function ($row) {
             $row = (array)$row;
             $row["action"] = null;
+            $row["action"] = null;
             $row["filter_options"] = null;
             $row["filter_options_callback"] = null;
+            $row["filter_callback"] = null;
             return $row;
         }, $module->getDataTableVisibleColumns());
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
@@ -124,7 +120,7 @@ class Datatable extends Component
         $sort = explode("|", $this->sort);
         $module = $this->getAppModule();
         $this->perPage = in_array($this->perPage, $this->perPageOptions) ? $this->perPage : $this->perPageOptions[0];
-        $query = $module->applyFilters(app()->make($module->model()), $this->searchText, $this->filters, $sort);
+        $query = $module->applyFilters($module->makeModel(), $this->searchText, $this->filters, $sort);
         $total = $query->count();
         $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
         $this->hasNextCursor = $items->hasMorePages();
@@ -174,14 +170,14 @@ class Datatable extends Component
 
     private function executeAction($action, $item)
     {
-        $module = $this->getAppModule();
+        $noData = config("supernova.placeholder_no_data", "<span>   -   </span>");
         if (is_callable($action)) {
             $result = @$action($item);
-            return Blade::render($result ? "<span>$result</span>" : $module->placeholderDatatableColumnNoData());
+            return Blade::render($result ? "<span>$result</span>" : $noData);
         } elseif (is_string($action) || is_numeric($action)) {
             return Blade::render($action);
         }
-        return Blade::render($module->placeholderDatatableColumnNoData());
+        return Blade::render($noData);
     }
 
     public function clearFilter($field)

@@ -25,7 +25,7 @@ class Module
     {
         $cacheTime = 60 * 24;
         return cache()->remember($this->getCacheQtyKey(), $cacheTime, function () {
-            return app()->make($this->model())->count();
+            return $this->makeModel()->count();
         });
     }
 
@@ -34,6 +34,7 @@ class Module
         $name = $this->name();
         return match ($page) {
             'index' =>  data_get($name, 1, $this->id()),
+            'details' =>  'Detalhes de ' . strtolower(data_get($this->name(), 0)),
             default => $this->id()
         };
     }
@@ -44,9 +45,22 @@ class Module
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $name));
     }
 
+    public function makeModel()
+    {
+        $query = app()->make($this->model());
+        //custom conditions
+        return $query;
+    }
+
     public function canViewIndex(): bool
     {
         return true;
+    }
+
+    public function details($entity): View
+    {
+        $module = $this;
+        return view("supernova::modules.details", compact("module", "entity"));
     }
 
     public function index(): View
@@ -92,27 +106,9 @@ class Module
         return $this->metrics();
     }
 
-    public function icon(): ?string
-    {
-        return <<<HTML
-            <svg viewBox="0 0 24 24" fill="none">
-                <path opacity="0.5" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12" stroke-width="1.5"/>
-                <path d="M2 14C2 11.1997 2 9.79961 2.54497 8.73005C3.02433 7.78924 3.78924 7.02433 4.73005 6.54497C5.79961 6 7.19974 6 10 6H14C16.8003 6 18.2004 6 19.27 6.54497C20.2108 7.02433 20.9757 7.78924 21.455 8.73005C22 9.79961 22 11.1997 22 14C22 16.8003 22 18.2004 21.455 19.27C20.9757 20.2108 20.2108 20.9757 19.27 21.455C18.2004 22 16.8003 22 14 22H10C7.19974 22 5.79961 22 4.73005 21.455C3.78924 20.9757 3.02433 20.2108 2.54497 19.27C2 18.2004 2 16.8003 2 14Z" stroke-width="1.5"/>
-                <path d="M9.5 14.4L10.9286 16L14.5 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        HTML;
-    }
-
     public function canCreate(): bool
     {
         return true;
-    }
-
-    public function placeholderDatatableColumnNoData(): string
-    {
-        return <<<HTML
-            <span>   -   </span>
-        HTML;
     }
 
     public function dataTable(): array
@@ -123,14 +119,14 @@ class Module
             $filterType = FILTER_TYPES::TEXT;
             if ($column === "id") $filterType = FILTER_TYPES::NUMBER_RANGE;
             if ($column === "created_at" || $column === "updated_at") $filterType = FILTER_TYPES::DATE_RANGE;
-            $columns[] =  Column::name($column)->label($column)->searchable()->sortable()->filterable($filterType);
+            $columns[] =  Column::make($column)->searchable()->sortable()->filterable($filterType);
         }
         return $columns;
     }
 
     public function getTableColumns(): array
     {
-        $model = app()->make($this->model());
+        $model = $this->makeModel();
         return $model->getConnection()->getSchemaBuilder()->getColumnListing($model->getTable());
     }
 
@@ -187,33 +183,38 @@ class Module
         $model = $model->where(function ($query) use ($columns, $filters) {
             foreach ($columns as $column) {
                 if ($column->filterable) {
+                    $callback = $column->filter_callback;
                     $val = data_get($filters, $column->name, '');
-                    if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
-                        $min = data_get($filters, $column->name . "[0]");
-                        $max = data_get($filters, $column->name . "[1]");
-                        if ($min) $query->where($column->name, ">=", $min);
-                        if ($max) $query->where($column->name, "<=", $max);
-                    }
-                    if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
-                        $query->where($column->name, "like", "%{$val}%");
-                    };
-                    if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
-                        $query->whereDate($column->name, $val);
-                    };
-                    if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
-                        $min = data_get($filters, $column->name . "[0]");
-                        $max = data_get($filters, $column->name . "[1]");
-                        if ($min) $query->whereDate($column->name, ">=", $min);
-                        if ($max) $query->whereDate($column->name, "<=", $max);
-                    }
-                    if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
+                    if ($val && is_callable($callback)) {
+                        $callback($query, $val);
+                    } else {
+                        if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
+                            $min = data_get($filters, $column->name . "[0]");
+                            $max = data_get($filters, $column->name . "[1]");
+                            if ($min) $query->where($column->name, ">=", $min);
+                            if ($max) $query->where($column->name, "<=", $max);
+                        }
+                        if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
+                            $query->where($column->name, "like", "%{$val}%");
+                        };
+                        if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
+                            $query->whereDate($column->name, $val);
+                        };
+                        if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
+                            $min = data_get($filters, $column->name . "[0]");
+                            $max = data_get($filters, $column->name . "[1]");
+                            if ($min) $query->whereDate($column->name, ">=", $min);
+                            if ($max) $query->whereDate($column->name, "<=", $max);
+                        }
+                        if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
 
-                        $query->where(function ($query) use ($column, $val) {
-                            foreach ($val as $item) {
-                                $query->orWhere($column->name, data_get($item, 'value'));
-                            };
-                        });
-                    };
+                            $query->where(function ($query) use ($column, $val) {
+                                foreach ($val as $item) {
+                                    $query->orWhere($column->name, data_get($item, 'value'));
+                                };
+                            });
+                        };
+                    }
                 }
             }
         });
@@ -230,5 +231,47 @@ class Module
     {
         $name = $this->name();
         return "Criar " . strtolower($name[0]);
+    }
+
+    public function fields(): array
+    {
+        $tableColumns = $this->getTableColumns();
+        $fields = [];
+        foreach ($tableColumns as $column) {
+            if (in_array($column, ["id", "created_at", "updated_at"])) continue;
+            $fields[] =  Field::make($column)->type(FIELD_TYPES::TEXT);
+        }
+        return $fields;
+    }
+
+    public function getVisibleFieldPanels(): array
+    {
+        $fieldsWithoutPanel = collect($this->fields())->filter(function ($field) {
+            return $field->visible && class_basename(get_class($field)) === "Field";
+        })->toArray();
+        $panels = [];
+
+        if (count($fieldsWithoutPanel)) {
+            $panels[] = Panel::make($this->title("details"))->fields($fieldsWithoutPanel);
+        }
+
+        $visiblePanels = collect($this->fields())->filter(function ($panel) {
+            $fieldsVisible = count(collect(@$panel->fields ?? [])->filter(function ($field) {
+                return $field->visible;
+            })->toArray()) > 0;
+            return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
+        })->toArray();
+
+        $panels = array_merge($panels, $visiblePanels);
+        return $panels;
+    }
+
+    public function processFieldDetail($entity, $field): string
+    {
+        $detailAction = $field->detailAction;
+        if ($detailAction && is_callable($detailAction)) {
+            return $detailAction($entity);
+        }
+        return config("supernova.placeholder_no_data", "<span>   -   </span>");
     }
 }

@@ -43,7 +43,7 @@ class SelectField extends Component
             $this->options = $field->filter_options;
             $action = $field->filter_options_callback;
             if (is_callable($action)) {
-                $this->options = $action($module->model()::query());
+                $this->options = $action($module->makeModel());
             }
         }
         $this->loaded = true;

@@ -122,7 +122,7 @@
                                     <div class="w-full flex {{ $align }}">
                                         @if ($isFirst)
                                             <a href="{{ $moduleUrl . '/' . $item['_id'] }}"
-                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                class="font-medium text-blue-600 dark:text-blue-300 hover:underline ">
                                         @endif
                                         {!! $item[$field] !!}
                                         @if ($isFirst)

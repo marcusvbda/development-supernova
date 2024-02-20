@@ -17,19 +17,25 @@ class Column
     public $minWidth;
     public $action;
     public $visible = true;
+    public $filter_callback;
     public $filterOptionsLimit;
 
-    public function __construct($name)
+    public static function make($name, $label = null): Column
+    {
+        return new static($name, $label);
+    }
+
+    public function __construct($name, $label = null)
     {
         $this->name = $name;
-        $this->label = $name;
+        $this->label = $label ? $label : $name;
         $this->action = fn ($row) => $row->{$name};
     }
 
-    public static function name($val): Column
+    public function name($val): Column
     {
-        $self = new static($val);
-        return $self;
+        $this->name = $val;
+        return $this;
     }
 
     public function label($val): Column
@@ -77,13 +83,24 @@ class Column
 
     public function filterOptions($options): Column
     {
-        $this->filter_options = $options;
+        $this->filter_options = array_map(function ($row) {
+            if (is_array($row) && array_key_exists("value", $row) && array_key_exists("label", $row)) {
+                return $row;
+            }
+            return ["value" => $row, "label" => $row];
+        }, $options);
         return $this;
     }
 
     public function filterOptionsCallback($callback): Column
     {
         $this->filter_options_callback = $callback;
+        return $this;
+    }
+
+    public function filterCallback($callback): Column
+    {
+        $this->filter_callback = $callback;
         return $this;
     }
 

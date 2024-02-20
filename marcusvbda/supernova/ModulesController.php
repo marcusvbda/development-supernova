@@ -19,7 +19,7 @@ class ModulesController extends Controller
     {
         $module = $this->application->getModule($module);
         if (!$module->canEdit()) abort(403);
-        $target = $module->model()::findOrFail($id);
+        $target = $module->makeModel()->findOrFail($id);
         dd("edit page", $target);
     }
 
@@ -34,8 +34,8 @@ class ModulesController extends Controller
     {
         $module = $this->application->getModule($module);
         if (!$module->canViewIndex()) abort(403);
-        $target = $module->model()::findOrFail($id);
-        dd("details page", $target);
+        $target = $module->makeModel()->findOrFail($id);
+        return $module->details($target);
     }
 
     public function index($module): View

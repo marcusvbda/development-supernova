@@ -1,6 +1,3 @@
-@php
-    $icon = $module->icon();
-@endphp
 @extends(config('supernova.modules_template', 'supernova::templates.default'))
 @section('title', $module->title('index'))
 @section('content')
@@ -14,12 +11,7 @@
         </div>
     @endif
     <section class="flex flex-col">
-        <h4 class="text-3xl text-neutral-800 font-bold dark:text-neutral-200 mt-3 mb-2 flex items-center gap-3">
-            @if ($icon)
-                <div class="w-[30px] h-[30px] dark:stroke-white stroke-neutral-800">
-                    {!! $icon !!}
-                </div>
-            @endif
+        <h4 class="text-3xl text-neutral-800 font-bold dark:text-neutral-200 mt-3 mb-2 flex items-center gap-3 mt-6">
             {{ $module->title('index') }}
         </h4>
         @livewire('supernova::datatable', [

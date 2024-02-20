@@ -8,4 +8,6 @@ class Permission extends Model
 {
     protected $table = "permissions";
     public $guarded = ["created_at"];
+
+    public static $types = ['Grupos de acesso', 'Usuários', 'Squads', 'Clientes'];
 }

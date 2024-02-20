@@ -8,6 +8,8 @@ use Livewire\Component;
 class Breadcrumb extends Component
 {
     public $items = [];
+    public $entityUrl = null;
+    public $entityId = null;
     public function mount()
     {
         $application = app()->make(config("supernova.application", Application::class));
@@ -20,11 +22,22 @@ class Breadcrumb extends Component
             "route" => route("supernova.home"),
         ];
         if ($currentRoute != "supernova.home" && $moduleId) {
-            if (strpos($currentRoute, "supernova.modules") === 0) {
+            if ($currentRoute === "supernova.modules.index") {
                 $module = $application->getModule($moduleId);
                 $this->items[] = [
                     "title" => $module->name()[1],
                     "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                ];
+            }
+            if ($currentRoute === "supernova.modules.details") {
+                $module = $application->getModule($moduleId);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->name()[0] . " #" . $this->entityId,
+                    "route" => $this->entityUrl
                 ];
             }
         }
