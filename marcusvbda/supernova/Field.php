@@ -13,6 +13,7 @@ class Field
     public $rules = [];
     public $messages = [];
     public $option_keys = ['value' => 'id', 'label' => 'name'];
+    public $options_callback;
     public $options = [];
     public $visible = true;
     public $visibleOnDetails = true;
@@ -48,6 +49,12 @@ class Field
                     $valueContent = @$value?->{data_get($this->option_keys, 'label')} ?? null;
                     return $valueContent ? $valueContent : $this->noData;
                 }
+            };
+
+            $this->options_callback = function () {
+                return $this->model->orderBy(data_get($this->option_keys, 'label'), "asc")->get()->map(function ($row) {
+                    return ["value" => $row->{data_get($this->option_keys, 'value')}, "label" => $row->{data_get($this->option_keys, 'label')}];
+                })->toArray();
             };
         }
         return $this;

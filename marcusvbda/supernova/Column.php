@@ -138,9 +138,11 @@ class Column
             }, $options);
         } else {
             $this->model = app()->make($options);
-            $this->filter_options = $this->model->orderBy(data_get($this->option_keys, 'label'), "asc")->get()->map(function ($row) {
-                return ["value" => $row->{data_get($this->option_keys, 'value')}, "label" => $row->{data_get($this->option_keys, 'label')}];
-            })->toArray();
+            $this->filter_options_callback = function () {
+                return $this->model->orderBy(data_get($this->option_keys, 'label'), "asc")->get()->map(function ($row) {
+                    return ["value" => $row->{data_get($this->option_keys, 'value')}, "label" => $row->{data_get($this->option_keys, 'label')}];
+                })->toArray();
+            };
             $this->action = fn ($row) => $row->{$this->name}->{$this->option_keys['label']};
         }
         return $this;
