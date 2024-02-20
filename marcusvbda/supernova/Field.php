@@ -11,6 +11,7 @@ class Field
     public $detailCallback;
     public $type = "text";
     public $rules = [];
+    public $messages = [];
     public $option_keys = ['value' => 'id', 'label' => 'name'];
     public $options = [];
     public $visible = true;
@@ -29,13 +30,13 @@ class Field
         $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
     }
 
-    public function type($val): Field
+    public function type($type): Field
     {
-        $this->type = $val;
-        if ($val === FIELD_TYPES::TEXT) {
+        $this->type = is_string($type) ? $type : @$type->value;
+        if ($this->type === FIELD_TYPES::TEXT->value) {
             $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
         }
-        if ($val === FIELD_TYPES::SELECT) {
+        if ($this->type === FIELD_TYPES::SELECT->value) {
             $this->detailCallback = function ($entity) {
                 if (!$this->model) {
                     $value = @$entity?->{$this->field} ?? null;
@@ -52,9 +53,10 @@ class Field
         return $this;
     }
 
-    public function rules($val): Field
+    public function rules($val, $messages = []): Field
     {
         $this->rules = $val;
+        $this->messages = $messages;
         return $this;
     }
 

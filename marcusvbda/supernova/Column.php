@@ -80,7 +80,7 @@ class Column
         if (!$this->minWidth) {
             $this->minWidth("200px");
         }
-        if ($type === FILTER_TYPES::SELECT) {
+        if ($type->value === FILTER_TYPES::SELECT->value) {
             $this->filter_options_limit = $filter_options_limit;
             $this->filter_callback = function ($query, $value) {
                 $values = array_map(function ($row) {
@@ -94,7 +94,7 @@ class Column
                 return $query;
             };
         }
-        if ($type === FILTER_TYPES::NUMBER_RANGE) {
+        if ($type->value === FILTER_TYPES::NUMBER_RANGE->value) {
             $this->filter_callback = function ($query, $value) {
                 if (!$value) return $query;
                 $query->where(function ($q) use ($value) {
@@ -103,7 +103,7 @@ class Column
                 });
             };
         }
-        if ($type === FILTER_TYPES::DATE_RANGE) {
+        if ($type->value === FILTER_TYPES::DATE_RANGE->value) {
             $this->filter_callback = function ($query, $value) {
                 if (!$value) return $query;
                 $query->where(function ($q) use ($value) {
@@ -112,7 +112,7 @@ class Column
                 });
             };
         }
-        if ($type === FILTER_TYPES::DATE) {
+        if ($type->value === FILTER_TYPES::DATE->value) {
             $this->filter_callback = function ($query, $value) {
                 if (!$value) return $query;
                 $query->whereDate($this->name, $value);

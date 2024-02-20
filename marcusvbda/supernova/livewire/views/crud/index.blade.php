@@ -24,7 +24,13 @@
                         </h4>
                     </label>
                     <div class="w-full md:w-9/12 text-gray-600 dark:text-gray-300">
-                        FIELD
+                        @php
+                            $type = data_get($field, 'type');
+                            $fieldBlade = "supernova-livewire-views::crud.fields.$type";
+                        @endphp
+                        @if (View::exists($fieldBlade))
+                            @include($fieldBlade, ['field' => $field])
+                        @endif
                     </div>
                 </div>
             @endforeach

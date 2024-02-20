@@ -4,6 +4,7 @@ namespace App\Http\Supernova\Modules;
 
 use App\Models\Permission;
 use App\Models\PermissionType;
+use Illuminate\Support\Facades\Auth;
 use marcusvbda\supernova\Column;
 use marcusvbda\supernova\Field;
 use marcusvbda\supernova\FIELD_TYPES;
@@ -35,8 +36,10 @@ class Permissions extends Module
         $columns[] = Column::make("name", "Nome")
             ->searchable()->sortable()
             ->filterable(FILTER_TYPES::TEXT);
-        $columns[] = Column::make("type", "Tipo")
+        $columns[] = Column::make("key", "Chave")
             ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::make("type", "Tipo")
             ->filterable(FILTER_TYPES::SELECT, 3)
             ->filterOptions(PermissionType::class);
         return $columns;
@@ -45,8 +48,8 @@ class Permissions extends Module
     public function fields(): array
     {
         return [
-            Field::make("name", "Name"),
-            Field::make("key", "Chave"),
+            Field::make("name", "Name")->rules(["required"]),
+            Field::make("key", "Chave")->rules(["required", "unique:permissions,key,{{id}}"]),
             Field::make("type", "Tipo")->type(FIELD_TYPES::SELECT)
                 ->options(PermissionType::class)
         ];
@@ -54,16 +57,16 @@ class Permissions extends Module
 
     public function canDelete(): bool
     {
-        return true;
+        return Auth::user()->role === "root";
     }
 
     public function canEdit(): bool
     {
-        return false;
+        return Auth::user()->role === "root";
     }
 
     public function canCreate(): bool
     {
-        return false;
+        return Auth::user()->role === "root";
     }
 }
