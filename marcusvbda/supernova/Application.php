@@ -6,6 +6,7 @@ use App\Models\User;
 use Auth;
 use marcusvbda\supernova\livewire\components\Breadcrumb;
 use marcusvbda\supernova\livewire\components\CounterCard;
+use marcusvbda\supernova\livewire\components\Crud;
 use marcusvbda\supernova\livewire\components\Dashboard;
 use marcusvbda\supernova\livewire\components\Datatable;
 use marcusvbda\supernova\livewire\components\Details;
@@ -86,7 +87,9 @@ class Application
 
     public function getModule($module): Module
     {
-        $module = $this->modulesNamespace . ucfirst($module);
+        $module = str_replace("-", " ", $module);
+        $module = str_replace(" ", "", ucwords($module));
+        $module = $this->modulesNamespace . $module;
         if (!class_exists($module)) abort(404);
         return app()->make($module);
     }
@@ -103,6 +106,11 @@ class Application
         }
 
         return $modules;
+    }
+
+    public function crud(): string
+    {
+        return Crud::class;
     }
 
     public function loginForm(): string
@@ -214,5 +222,10 @@ class Application
     public function selectField()
     {
         return SelectField::class;
+    }
+
+    public static function message($type, $message)
+    {
+        session()->push('quick.alerts', (object) ["type" => $type, "message" => $message, "closeable" => true]);
     }
 }

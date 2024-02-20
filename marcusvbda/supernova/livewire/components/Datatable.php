@@ -129,6 +129,7 @@ class Datatable extends Component
         $this->prevCursor = $this->hasPrevCursor ? $items->previousCursor()->encode() : null;
         $this->itemsPage = $this->processItems($items);
         $this->totalPages =  ceil($total / $this->perPage);
+        $this->totalPages = $this->totalPages == 0 ? 1 : $this->totalPages;
         $this->totalResults = $total;
         $this->hasItems = $total > 0;
     }

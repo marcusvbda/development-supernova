@@ -72,7 +72,7 @@
                                 $showBorder = !$lastColumn;
                                 $filterType = data_get($value, 'filter_type');
                                 $filterBlade = "supernova-livewire-views::datatable.filters.$filterType";
-                                $filterOptionsLimit = data_get($value, 'filterOptionsLimit');
+                                $filter_options_limit = data_get($value, 'filter_options_limit');
                                 $field = data_get($value, 'name');
                                 $isFirst = $key === 0;
                             @endphp
@@ -81,7 +81,7 @@
                                 @if (View::exists($filterBlade))
                                     @include($filterBlade, [
                                         'field' => $field,
-                                        'filterOptionsLimit' => $filterOptionsLimit,
+                                        'filter_options_limit' => $filter_options_limit,
                                     ])
                                 @endif
                             </th>

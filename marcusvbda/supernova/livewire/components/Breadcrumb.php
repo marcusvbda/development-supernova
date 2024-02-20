@@ -40,6 +40,17 @@ class Breadcrumb extends Component
                     "route" => $this->entityUrl
                 ];
             }
+            if ($currentRoute === "supernova.modules.create") {
+                $module = $application->getModule($moduleId);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->title("create"),
+                    "route" => route("supernova.modules.create", ["module" => $moduleId]),
+                ];
+            }
         }
     }
 

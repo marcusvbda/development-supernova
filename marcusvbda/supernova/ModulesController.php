@@ -27,7 +27,7 @@ class ModulesController extends Controller
     {
         $module = $this->application->getModule($module);
         if (!$module->canCreate()) abort(403);
-        dd("create page");
+        return $module->create();
     }
 
     public function details($module, $id): View

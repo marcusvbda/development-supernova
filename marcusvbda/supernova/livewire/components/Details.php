@@ -2,6 +2,7 @@
 
 namespace marcusvbda\supernova\livewire\components;
 
+use App\Http\Supernova\Application;
 use Livewire\Component;
 
 class Details extends Component
@@ -9,10 +10,33 @@ class Details extends Component
     public $module;
     public $entity;
     public $panels = [];
+    public $canDelete = false;
+    public $canEdit = false;
 
     public function placeholder()
     {
         return view('supernova-livewire-views::skeleton', ['size' => '500px']);
+    }
+
+    private function getModule()
+    {
+        $application = app()->make(config('supernova.application', Application::class));
+        return $application->getModule($this->module);
+    }
+
+    public function redirectToEdit()
+    {
+        $module = $this->getModule();
+        return redirect()->route('supernova.modules.edit', ['module' => $module->id(), 'id' => $this->entity->id]);
+    }
+
+    public function deleteEntity()
+    {
+        $module = $this->getModule();
+        $module->delete($this->entity);
+        $application = app()->make(config('supernova.application', Application::class));
+        $application::message("success", "Registro deletado com sucesso");
+        return redirect()->route('supernova.modules.index', ['module' => $module->id()]);
     }
 
     public function render()

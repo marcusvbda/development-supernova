@@ -35,6 +35,7 @@ class Module
         return match ($page) {
             'index' =>  data_get($name, 1, $this->id()),
             'details' =>  'Detalhes de ' . strtolower(data_get($this->name(), 0)),
+            'create' =>  'Cadastro de ' . strtolower(data_get($this->name(), 0)),
             default => $this->id()
         };
     }
@@ -61,6 +62,12 @@ class Module
     {
         $module = $this;
         return view("supernova::modules.details", compact("module", "entity"));
+    }
+
+    public function create(): View
+    {
+        $module = $this;
+        return view("supernova::modules.create", compact("module"));
     }
 
     public function index(): View
@@ -185,35 +192,13 @@ class Module
                 if ($column->filterable) {
                     $callback = $column->filter_callback;
                     $val = data_get($filters, $column->name, '');
-                    if ($val && is_callable($callback)) {
+                    if (is_callable($callback)) {
+                        if (in_array($column->filter_type, [FILTER_TYPES::NUMBER_RANGE->value, FILTER_TYPES::DATE_RANGE->value])) {
+                            $min = data_get($filters, $column->name . "[0]");
+                            $max = data_get($filters, $column->name . "[1]");
+                            $val = $min || $max ? [$min, $max] : null;
+                        }
                         $callback($query, $val);
-                    } else {
-                        if ($column->filter_type == FILTER_TYPES::NUMBER_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
-                            $min = data_get($filters, $column->name . "[0]");
-                            $max = data_get($filters, $column->name . "[1]");
-                            if ($min) $query->where($column->name, ">=", $min);
-                            if ($max) $query->where($column->name, "<=", $max);
-                        }
-                        if ($column->filter_type == FILTER_TYPES::TEXT->value && $val) {
-                            $query->where($column->name, "like", "%{$val}%");
-                        };
-                        if ($column->filter_type == FILTER_TYPES::DATE->value && $val) {
-                            $query->whereDate($column->name, $val);
-                        };
-                        if ($column->filter_type == FILTER_TYPES::DATE_RANGE->value && (data_get($filters, $column->name . "[0]") || data_get($filters, $column->name . "[1]"))) {
-                            $min = data_get($filters, $column->name . "[0]");
-                            $max = data_get($filters, $column->name . "[1]");
-                            if ($min) $query->whereDate($column->name, ">=", $min);
-                            if ($max) $query->whereDate($column->name, "<=", $max);
-                        }
-                        if ($column->filter_type == FILTER_TYPES::SELECT->value && $val) {
-
-                            $query->where(function ($query) use ($column, $val) {
-                                foreach ($val as $item) {
-                                    $query->orWhere($column->name, data_get($item, 'value'));
-                                };
-                            });
-                        };
                     }
                 }
             }
@@ -244,22 +229,23 @@ class Module
         return $fields;
     }
 
-    public function getVisibleFieldPanels(): array
+    public function getVisibleFieldPanels($panelFallback = ""): array
     {
         $fieldsWithoutPanel = collect($this->fields())->filter(function ($field) {
-            return $field->visible && class_basename(get_class($field)) === "Field";
+            return $field->visible && $field->visibleOnDetails && class_basename(get_class($field)) === "Field";
         })->toArray();
         $panels = [];
 
         if (count($fieldsWithoutPanel)) {
-            $panels[] = Panel::make($this->title("details"))->fields($fieldsWithoutPanel);
+            $title =  strtolower($this->name()[0]);
+            $panels[] = Panel::make($panelFallback ? ($panelFallback . ' ' . $title)  : $title)->fields($fieldsWithoutPanel);
         }
 
         $visiblePanels = collect($this->fields())->filter(function ($panel) {
             $fieldsVisible = count(collect(@$panel->fields ?? [])->filter(function ($field) {
-                return $field->visible;
+                return $field->visible && $field->visibleOnDetails;
             })->toArray()) > 0;
-            return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
+            return $panel->visible && $panel->visibleOnDetails && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
         })->toArray();
 
         $panels = array_merge($panels, $visiblePanels);
@@ -268,10 +254,15 @@ class Module
 
     public function processFieldDetail($entity, $field): string
     {
-        $detailAction = $field->detailAction;
-        if ($detailAction && is_callable($detailAction)) {
-            return $detailAction($entity);
+        $detailCallback = $field->detailCallback;
+        if ($detailCallback && is_callable($detailCallback)) {
+            return $detailCallback($entity);
         }
         return config("supernova.placeholder_no_data", "<span>   -   </span>");
+    }
+
+    public function delete($entity): void
+    {
+        $entity->delete();
     }
 }

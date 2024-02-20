@@ -4,6 +4,7 @@ namespace App\Http\Supernova\Modules;
 
 use App\Models\Team;
 use marcusvbda\supernova\Column;
+use marcusvbda\supernova\Field;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
 
@@ -37,5 +38,12 @@ class Teams extends Module
             ->callback(fn ($row) => $row->created_at?->format("d/m/Y - H:i:s"))
             ->filterable(FILTER_TYPES::DATE_RANGE);
         return $columns;
+    }
+
+    public function fields(): array
+    {
+        return [
+            Field::make("name", "Name"),
+        ];
     }
 }

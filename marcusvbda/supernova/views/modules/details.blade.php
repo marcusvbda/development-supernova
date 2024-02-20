@@ -1,5 +1,9 @@
 @php
     $title = $module->title('details');
+    $canEdit = $module->canEdit();
+    $canDelete = $module->canDelete();
+    $canEditRow = $canEdit && $module->canEditRow($entity);
+    $canDeleteRow = $canDelete && $module->canDeleteRow($entity);
 @endphp
 @extends(config('supernova.modules_template', 'supernova::templates.default'))
 @section('title', $title)
@@ -13,6 +17,8 @@
             'module' => $module->id(),
             'entity' => $entity,
             'lazy' => true,
+            'canEdit' => $canEditRow,
+            'canDelete' => $canDeleteRow,
         ])
     </section>
 @endsection

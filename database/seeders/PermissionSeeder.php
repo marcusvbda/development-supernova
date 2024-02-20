@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Permission;
+use App\Models\PermissionType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -17,15 +18,19 @@ class PermissionSeeder extends Seeder
     {
         $createdPermissions = [];
         DB::beginTransaction();
+        $type = PermissionType::updateOrCreate(
+            ['name' => $type],
+            ['name' => $type]
+        );
         foreach ($permissions as $permission) {
             $valueIndex = $permission[0];
             $valueTranslate = $permission[1];
-            $permissionName = ucfirst(strtolower("$valueTranslate $type"));
+            $permissionName = ucfirst(strtolower("$valueTranslate $type->name"));
             $permissionKey = "$valueIndex-$value";
 
             $createdPermissions[] = Permission::updateOrCreate(
-                ['type' => $type, 'key' => $permissionKey],
-                ['name' => $permissionName, 'type' => $type, 'key' => $permissionKey]
+                ['type_id' => $type->id, 'key' => $permissionKey],
+                ['name' => $permissionName, 'type_id' => $type->id, 'key' => $permissionKey]
             );
         }
         DB::commit();
@@ -37,6 +42,7 @@ class PermissionSeeder extends Seeder
     {
         $createdPermissions = [];
         DB::beginTransaction();
+        PermissionType::where('name', $type)->delete();
         $ids = Permission::where('type', $type)->pluck('id')->toArray();
         DB::table('access_group_permissions')->whereIn('permission_id', $ids)->delete();
         Permission::whereIn('id', $ids)->delete();

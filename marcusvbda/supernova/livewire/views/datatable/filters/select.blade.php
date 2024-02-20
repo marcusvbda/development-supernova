@@ -2,7 +2,7 @@
     $selectedOptions = data_get($filters, $field, []);
 @endphp
 <div class="relative">
-    @if ($filterOptionsLimit && $filterOptionsLimit <= count($selectedOptions))
+    @if ($filter_options_limit && $filter_options_limit <= count($selectedOptions))
         <div class="absolute inset-0 cursor-not-allowed z-1 bg-black opacity-5 rounded-md"></div>
     @endif
     @livewire('supernova::select-field', [

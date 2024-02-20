@@ -85,6 +85,15 @@ return new class extends Migration
 
     private function createPermissions()
     {
+        Schema::create("permission_types", function (Blueprint $table) {
+            $table->charset = 'utf8mb4';
+            $table->collation = 'utf8mb4_unicode_ci';
+            $table->engine = 'InnoDB';
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+        });
+
         Schema::create("permissions", function (Blueprint $table) {
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
@@ -92,7 +101,11 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('key');
-            $table->string('type');
+            $table->unsignedBigInteger("type_id");
+            $table->foreign("type_id")
+                ->references("id")
+                ->on("permission_types")
+                ->onDelete("cascade");
             $table->timestamps();
         });
 
@@ -138,8 +151,6 @@ return new class extends Migration
             $table->string('email');
             $table->boolean('dark_mode')->default(false);
             $table->string('role')->default("user");
-            $table->string('provider')->nullable();
-            $table->string('provider_id')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('instagram')->nullable();
             $table->string('whatsapp')->nullable();

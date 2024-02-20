@@ -3,11 +3,12 @@
 namespace App\Http\Supernova\Modules;
 
 use App\Models\Permission;
+use App\Models\PermissionType;
 use marcusvbda\supernova\Column;
 use marcusvbda\supernova\Field;
+use marcusvbda\supernova\FIELD_TYPES;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
-use marcusvbda\supernova\Panel;
 
 class Permissions extends Module
 {
@@ -37,24 +38,32 @@ class Permissions extends Module
         $columns[] = Column::make("type", "Tipo")
             ->searchable()->sortable()
             ->filterable(FILTER_TYPES::SELECT, 3)
-            ->filterOptions(Permission::$types);
-        $columns[] = Column::make("created_at", "Criado em ...")
-            ->searchable()->sortable()
-            ->callback(fn ($row) => $row->created_at?->format("d/m/Y - H:i:s"))
-            ->filterable(FILTER_TYPES::DATE_RANGE);
+            ->filterOptions(PermissionType::class);
         return $columns;
     }
 
     public function fields(): array
     {
         return [
-            Field::make("tete", "teste")->canSee(true),
-
-            Panel::make("Informações Básicas")->fields([
-                Field::make("name", "Nome"),
-                Field::make("teste", "teste2")
-                // Column::make("type", "Tipo")->rules("required")->type("select")->options(Permission::$types)
-            ])
+            Field::make("name", "Name"),
+            Field::make("key", "Chave"),
+            Field::make("type", "Tipo")->type(FIELD_TYPES::SELECT)
+                ->options(PermissionType::class)
         ];
+    }
+
+    public function canDelete(): bool
+    {
+        return true;
+    }
+
+    public function canEdit(): bool
+    {
+        return false;
+    }
+
+    public function canCreate(): bool
+    {
+        return false;
     }
 }
