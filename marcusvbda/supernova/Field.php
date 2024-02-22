@@ -9,6 +9,7 @@ class Field
     public $noData;
     public $model;
     public $limit = 1;
+    public $multiple = false;
     public $detailCallback;
     public $type = "text";
     public $rules = [];
@@ -110,8 +111,9 @@ class Field
         return $this;
     }
 
-    public function limit($limit): Field
+    public function multiple($limit = null): Field
     {
+        $this->multiple = true;
         $this->limit = $limit;
         return $this;
     }

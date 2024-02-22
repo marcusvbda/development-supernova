@@ -80,6 +80,7 @@
                                 class="@if ($isFirst) table-column-fixed filter @endif @if ($field === 'id')  @endif @if ($showBorder) border-r border-blue-200 dark:border-blue-500 @endif align-top p-1">
                                 @if (View::exists($filterBlade))
                                     @include($filterBlade, [
+                                        'column' => $value,
                                         'field' => $field,
                                         'filter_options_limit' => $filter_options_limit,
                                     ])

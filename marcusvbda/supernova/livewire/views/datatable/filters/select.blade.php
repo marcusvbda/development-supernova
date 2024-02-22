@@ -5,4 +5,5 @@
     'onChange' => 'setSelectOption',
     'onRemove' => 'removeFilterOption',
     'onInit' => 'loadFilterOptions',
+    'limit' => data_get($column, 'filter_options_limit'),
 ])
