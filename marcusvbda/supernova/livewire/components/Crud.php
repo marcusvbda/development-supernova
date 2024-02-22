@@ -88,6 +88,21 @@ class Crud extends Component
         $this->loaded_options[$field->field] = true;
     }
 
+    public function removeOption($field, $index)
+    {
+        $oldValues = data_get($this->values, $field, []);
+        $newValues = collect($oldValues)->filter(fn ($item) => $item['value'] != $index);
+        $this->values[$field] = $newValues->count() > 0 ? $newValues->toArray() : [];
+    }
+
+    public function setSelectOption($val, $field, $label)
+    {
+        $this->values[$field][] = [
+            "value" => $val,
+            "label" => $label
+        ];
+    }
+
     public function render()
     {
         return view('supernova-livewire-views::crud.index');

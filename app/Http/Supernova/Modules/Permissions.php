@@ -52,6 +52,7 @@ class Permissions extends Module
             Field::make("key", "Chave")->rules(["required", "unique:permissions,key,{{id}}"]),
             Field::make("type", "Tipo")->type(FIELD_TYPES::SELECT)
                 ->options(PermissionType::class)
+                ->limit(1)
         ];
     }
 

@@ -11,21 +11,17 @@
             <span class="order-2 md:order-1">{{ data_get($panel, 'label') }}</span>
             @if (($key === 0 && $canEdit) || $canDelete)
                 <div class="text-sm order-1 flex justify-end">
-                    <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <div>
                         @if ($canEdit)
                             <button type="button" wire:click="redirectToEdit" wire:loading.attr="disabled"
-                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-transparent border border-gray-300 rounded-s-lg 
-                            hover:bg-gray-900 hover:text-white focus:bg-gray-900 dark:border-white @if ($canDelete) border-r-0 @endif
-                            dark:text-gray-200 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-700">
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition dark:bg-gray-800 hover:dark:bg-gray-900">
                                 Editar
                             </button>
                         @endif
                         @if ($canDelete)
                             <button type="button" wire:click="deleteEntity" wire:loading.attr="disabled"
                                 wire:confirm="Tem certeza que deseja excluir?"
-                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-700 bg-transparent border border-l-none border-gray-300 
-                                rounded-e-lg hover:bg-red-800 hover:text-white dark:border-white dark:text-white 
-                                dark:hover:text-white dark:hover:bg-red-800 dark:focus:bg-gray-700">
+                                class="bg-red-700 hover:bg-red-800 border text-white font-bold py-2 px-6 rounded transition dark:bg-gray-800 hover:dark:bg-gray-900 dark:hover:text-red-700">
                                 Excluir
                             </button>
                         @endif

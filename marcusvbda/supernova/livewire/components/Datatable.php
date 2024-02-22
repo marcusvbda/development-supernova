@@ -20,6 +20,8 @@ class Datatable extends Component
     public $sort;
     public $itemsPage = [];
     public $perPageOptions = [];
+    public $loaded_options = [];
+    public $filter_options = [];
     public $perPage;
     public $hasPrevCursor = false;
     public $hasNextCursor = false;
@@ -44,19 +46,6 @@ class Datatable extends Component
         } else {
             $this->filters[$field] = $value;
         }
-    }
-
-    public function getListeners()
-    {
-        $listers = [];
-        $module = $this->getAppModule();
-        $columns = $module->getDataTableVisibleColumns();
-        foreach ($columns as $column) {
-            if ($column->filterable) {
-                $listers["filters[{$column->name}]:changed"] = "updateFilterValue";
-            }
-        }
-        return $listers;
     }
 
     public function placeholder()
@@ -169,6 +158,29 @@ class Datatable extends Component
         return $itemsPage;
     }
 
+    public function setSelectOption($val, $field, $label)
+    {
+        $this->filters[$field][] = [
+            "value" => $val,
+            "label" => $label
+        ];
+        $this->loadData();
+    }
+
+    public function loadFilterOptions($field)
+    {
+        $module = $this->getAppModule();
+        $columns = $module->getDataTableVisibleColumns();
+        $column = collect($columns)->first(fn ($col) => $col->name == $field);
+        $filter_options_callback = $column->filter_options_callback;
+        if ($filter_options_callback && is_callable($filter_options_callback)) {
+            $this->filter_options[$field] = $filter_options_callback();
+        } else {
+            $this->filter_options[$field] = $column->filter_options;
+        }
+        $this->loaded_options[$field] = true;
+    }
+
     private function executeAction($action, $item)
     {
         $noData = config("supernova.placeholder_no_data", "<span>   -   </span>");
@@ -190,6 +202,14 @@ class Datatable extends Component
     public function clearSearch()
     {
         $this->searchText = "";
+        $this->loadData();
+    }
+
+    public function removeFilterOption($field, $value)
+    {
+        $oldValues = data_get($this->filters, $field, []);
+        $newValues = collect($oldValues)->filter(fn ($item) => $item['value'] != $value);
+        $this->filters[$field] = $newValues->count() > 0 ? $newValues->toArray() : [];
         $this->loadData();
     }
 

@@ -8,6 +8,7 @@ class Field
     public $label;
     public $noData;
     public $model;
+    public $limit = 1;
     public $detailCallback;
     public $type = "text";
     public $rules = [];
@@ -106,6 +107,12 @@ class Field
                 return ["value" => $row->{data_get($this->option_keys, 'value')}, "label" => $row->{data_get($this->option_keys, 'label')}];
             })->toArray();
         }
+        return $this;
+    }
+
+    public function limit($limit): Field
+    {
+        $this->limit = $limit;
         return $this;
     }
 }
