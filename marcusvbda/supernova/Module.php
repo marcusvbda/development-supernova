@@ -265,4 +265,29 @@ class Module
     {
         $entity->delete();
     }
+
+    public function onSaved()
+    {
+        $this->clearCacheQty();
+    }
+
+    public function onPostSave($model, $values): void
+    {
+        foreach ($values as $field => $value) {
+            $callback = $model->{$value}();
+            if ($callback && is_callable($callback)) {
+                $callback()->sync($value);
+            }
+        }
+    }
+
+    public function onSave($id, $values): void
+    {
+        $model = $id ? $this->makeModel()->findOrFail($id) : $this->makeModel();
+        $model->fill($values['save']);
+        $model->save();
+
+        $this->onPostSave($model, $values['post_save']);
+        $this->onSaved();
+    }
 }

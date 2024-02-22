@@ -4,11 +4,13 @@ namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
 use Livewire\Component;
+use marcusvbda\supernova\FIELD_TYPES;
 
 class Crud extends Component
 {
     public $module;
     public $entity;
+    public $editingContent = [];
     public $panels = [];
     public $values = [];
     public $options = [];
@@ -101,6 +103,31 @@ class Crud extends Component
             "value" => $val,
             "label" => $label
         ];
+    }
+
+    public function save()
+    {
+        $this->validate();
+        $module = $this->getModule();
+        $values = ['save' => [], 'post_save' => []];
+        $panels = $module->getVisibleFieldPanels();
+        foreach ($panels as $panel) {
+            foreach ($panel->fields as $field) {
+                if ($field->type == FIELD_TYPES::SELECT->value) {
+                    if ($field->multiple) {
+                        $values['post_save'][$field->field] = array_map(fn ($item) => $item['value'], data_get($this->values, $field->field, []) ?? []);
+                    } else {
+                        $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0.value");
+                    }
+                } else {
+                    $values['save'][$field->field] = $this->values[$field->field];
+                }
+            }
+        }
+        $module->onSave(data_get($this->editingContent, 'id'), $values);
+        $application = app()->make(config('supernova.application', Application::class));
+        $application::message("success", "Registro salvo com sucesso");
+        return redirect()->route('supernova.modules.index', ['module' => $module->id()]);
     }
 
     public function render()

@@ -33,20 +33,20 @@ class Field
         $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
     }
 
-    public function type($type): Field
+    public function type($type, $relation = null): Field
     {
         $this->type = is_string($type) ? $type : @$type->value;
         if ($this->type === FIELD_TYPES::TEXT->value) {
             $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
         }
         if ($this->type === FIELD_TYPES::SELECT->value) {
-            $this->detailCallback = function ($entity) {
+            $this->detailCallback = function ($entity)  use ($relation) {
                 if (!$this->model) {
                     $value = @$entity?->{$this->field} ?? null;
                     $option = collect($this->options)->first(fn ($row) => $row["value"] == $value);
                     return $option ? $option["label"] : $this->noData;
                 } else {
-                    $value = @$entity?->{$this->field} ?? null;
+                    $value = @$entity?->{$relation ? $relation : $this->field} ?? null;
                     if (!$value) return $this->noData;
                     $valueContent = @$value?->{data_get($this->option_keys, 'label')} ?? null;
                     return $valueContent ? $valueContent : $this->noData;

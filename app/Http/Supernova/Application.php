@@ -2,6 +2,13 @@
 
 namespace App\Http\Supernova;
 
+use App\Http\Supernova\Modules\AccessGroups;
+use App\Http\Supernova\Modules\Customers;
+use App\Http\Supernova\Modules\Permissions;
+use App\Http\Supernova\Modules\Projects;
+use App\Http\Supernova\Modules\Squads;
+use App\Http\Supernova\Modules\Teams;
+use App\Http\Supernova\Modules\Users;
 use marcusvbda\supernova\Application as SupernovaApplication;
 use Auth;
 
@@ -38,14 +45,21 @@ class Application extends SupernovaApplication
         return $cards;
     }
 
-    public function menuItems(): array
+    public function modules(): array
     {
-        $items = parent::menuItems();
         return [
-            "Dashboard" => data_get($items, "Dashboard"),
-            "Time" => data_get($items, "Time"),
-            "Demandas" => data_get($items, "Demandas"),
-            "Configurações" => data_get($items, "Configurações"),
+            // times
+            Squads::class,
+            Teams::class,
+            Users::class,
+
+            //demandas
+            Customers::class,
+            Projects::class,
+
+            //configurações
+            AccessGroups::class,
+            Permissions::class,
         ];
     }
 }

@@ -40,10 +40,10 @@ class Users extends Module
         return $columns;
     }
 
-    public function fields(): array
-    {
-        return [
-            Field::make("name", "Name"),
-        ];
-    }
+    // public function fields(): array
+    // {
+    //     return [
+    //         Field::make("name", "Name"),
+    //     ];
+    // }
 }

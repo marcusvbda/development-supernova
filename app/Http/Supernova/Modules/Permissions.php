@@ -50,9 +50,9 @@ class Permissions extends Module
         return [
             Field::make("name", "Name")->rules(["required"]),
             Field::make("key", "Chave")->rules(["required", "unique:permissions,key,{{id}}"]),
-            Field::make("type", "Tipo")->type(FIELD_TYPES::SELECT)
+            Field::make("type_id", "Tipo")->type(FIELD_TYPES::SELECT, 'type')
                 ->options(PermissionType::class)
-                ->multiple()
+                ->rules(["required"], ["required" => "O campo tipo é obrigatório"])
         ];
     }
 

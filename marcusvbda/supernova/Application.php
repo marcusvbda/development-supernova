@@ -94,18 +94,23 @@ class Application
         return app()->make($module);
     }
 
-    public function getAllModules(): array
+    public function modules(): array
     {
         $path = $this->modulesPath;
         $namespace = $this->modulesNamespace;
         $modules = [];
         foreach (scandir(app_path($path)) as $item) {
             if ($item != "." && $item != "..") {
-                $modules[] = app()->make($namespace . ucfirst(str_replace(".php", "", $item)));
+                $modules[] = $namespace . ucfirst(str_replace(".php", "", $item));
             }
         }
 
         return $modules;
+    }
+
+    public function getAllModules(): array
+    {
+        return array_map(fn ($module) => app()->make($module), $this->modules());
     }
 
     public function crud(): string

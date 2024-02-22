@@ -1,6 +1,6 @@
 <div class=" mb-20 bg-gray-50 dark:bg-gray-600  rounded-lg text-gray-700 border border-gray-200 dark:border-gray-700 dark:text-gray-50"
     x-data="datatable">
-    <div class=" overflow-x-auto relative" wire:loading.class="opacity-50 overflow-x-hidden">
+    <div class="overflow-x-auto relative" wire:loading.class="opacity-50 overflow-x-hidden">
         <div wire:loading>
             <div class="flex items-center justify-center w-full cursor-wait"
                 style="position: absolute;inset: 0;background-color: #77777729;z-index=9;display:flex;align-items-center;justify-content:center;z-index: 9;">
