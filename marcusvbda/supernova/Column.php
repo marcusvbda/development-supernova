@@ -84,7 +84,7 @@ class Column
             $this->filter_options_limit = $filter_options_limit;
             $this->filter_callback = function ($query, $value) {
                 $values = array_map(function ($row) {
-                    return $row["value"];
+                    return $row;
                 }, ($value ? $value : []));
                 if (count($values) <= 0) return $query;
                 if (!$this->model) return $query->whereIn($this->name, $values);

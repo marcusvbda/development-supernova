@@ -51,6 +51,21 @@ class Breadcrumb extends Component
                     "route" => route("supernova.modules.create", ["module" => $moduleId]),
                 ];
             }
+            if ($currentRoute === "supernova.modules.edit") {
+                $module = $application->getModule($moduleId);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->name()[0] . " #" . $this->entityId,
+                    "route" => route("supernova.modules.details", ["module" => $moduleId, 'id' => $this->entityId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->title("edit"),
+                    "route" => route("supernova.modules.edit", ["module" => $moduleId, 'id' => $this->entityId]),
+                ];
+            }
         }
     }
 

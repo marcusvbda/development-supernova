@@ -2,7 +2,7 @@
     use App\Http\Supernova\Application;
     $application = app()->make(config('supernova.application', Application::class));
     $appModule = $application->getModule($module);
-    $panels = $appModule->getVisibleFieldPanels('Cadastro de');
+    $panels = $appModule->getVisibleFieldPanels($panelFallback);
 @endphp
 <div class="flex flex-col pb-10">
     @foreach ($panels as $key => $panel)

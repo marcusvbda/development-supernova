@@ -15,16 +15,55 @@ class Crud extends Component
     public $values = [];
     public $options = [];
     public $loaded_options = [];
+    public $panelFallback = 'Cadastro de';
+    public $type = 'create';
 
     public function placeholder()
     {
         return view('supernova-livewire-views::skeleton', ['size' => '500px']);
     }
 
-    public function rules()
+    public function mount()
+    {
+        if ($this->type === 'edit') {
+            $this->values["id"] = data_get($this->entity, "id");
+            $fields = $this->allFields();
+            foreach ($fields as $field) {
+                if ($field->type === FIELD_TYPES::SELECT->value) {
+                    if ($field->multiple) {
+                        // 
+                    } else {
+                        $value = data_get($this->entity, $field->field);
+                        $this->values[$field->field] = $value ? [$value] : [];
+                    }
+                } else {
+                    $this->values[$field->field] = data_get($this->entity, $field->field);
+                }
+            }
+        }
+    }
+
+    public function allFields()
     {
         $module = $this->getModule();
         $fields = $module->fields();
+        $result = [];
+        foreach ($fields as $field) {
+            $subfields = data_get($field, "fields");
+            if (!$subfields) {
+                $result[] = $field;
+            } else {
+                foreach (data_get($field, "fields", []) as $subfield) {
+                    $result[] = $subfield;
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function rules()
+    {
+        $fields = $this->allFields();
         $rules = [];
         foreach ($fields as $field) {
             if ($field->rules) {
@@ -36,8 +75,7 @@ class Crud extends Component
 
     public function messages()
     {
-        $module = $this->getModule();
-        $fields = $module->fields();
+        $fields = $this->allFields();
         $messages = [];
         foreach ($fields as $field) {
             if ($field->messages && count($field->messages)) {
@@ -52,8 +90,7 @@ class Crud extends Component
 
     public function validationAttributes()
     {
-        $module = $this->getModule();
-        $fields = $module->fields();
+        $fields = $this->allFields();
         $attr = [];
         foreach ($fields as $field) {
             if ($field->rules) {
@@ -93,16 +130,13 @@ class Crud extends Component
     public function removeOption($field, $index)
     {
         $oldValues = data_get($this->values, $field, []);
-        $newValues = collect($oldValues)->filter(fn ($item) => $item['value'] != $index);
+        $newValues = collect($oldValues)->filter(fn ($item) => $item != $index);
         $this->values[$field] = $newValues->count() > 0 ? $newValues->toArray() : [];
     }
 
-    public function setSelectOption($val, $field, $label)
+    public function setSelectOption($val, $field)
     {
-        $this->values[$field][] = [
-            "value" => $val,
-            "label" => $label
-        ];
+        $this->values[$field][] = $val;
     }
 
     public function save()
@@ -115,9 +149,9 @@ class Crud extends Component
             foreach ($panel->fields as $field) {
                 if ($field->type == FIELD_TYPES::SELECT->value) {
                     if ($field->multiple) {
-                        $values['post_save'][$field->field] = array_map(fn ($item) => $item['value'], data_get($this->values, $field->field, []) ?? []);
+                        $values['post_save'][$field->field] = array_map(fn ($item) => $item, data_get($this->values, $field->field, []) ?? []);
                     } else {
-                        $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0.value");
+                        $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0");
                     }
                 } else {
                     $values['save'][$field->field] = $this->values[$field->field];

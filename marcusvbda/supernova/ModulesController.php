@@ -20,7 +20,7 @@ class ModulesController extends Controller
         $module = $this->application->getModule($module);
         if (!$module->canEdit()) abort(403);
         $target = $module->makeModel()->findOrFail($id);
-        dd("edit page", $target);
+        return $module->edit($target);
     }
 
     public function create($module): View

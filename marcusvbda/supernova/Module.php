@@ -36,6 +36,7 @@ class Module
             'index' =>  data_get($name, 1, $this->id()),
             'details' =>  'Detalhes de ' . strtolower(data_get($this->name(), 0)),
             'create' =>  'Cadastro de ' . strtolower(data_get($this->name(), 0)),
+            'edit' =>  'Edição de ' . strtolower(data_get($this->name(), 0)),
             default => $this->id()
         };
     }
@@ -68,6 +69,12 @@ class Module
     {
         $module = $this;
         return view("supernova::modules.create", compact("module"));
+    }
+
+    public function edit($entity): View
+    {
+        $module = $this;
+        return view("supernova::modules.edit", compact("module", "entity"));
     }
 
     public function index(): View

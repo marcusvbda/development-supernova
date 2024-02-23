@@ -158,12 +158,9 @@ class Datatable extends Component
         return $itemsPage;
     }
 
-    public function setSelectOption($val, $field, $label)
+    public function setSelectOption($val, $field)
     {
-        $this->filters[$field][] = [
-            "value" => $val,
-            "label" => $label
-        ];
+        $this->filters[$field][] = $val;
         $this->loadData();
     }
 
@@ -208,7 +205,7 @@ class Datatable extends Component
     public function removeFilterOption($field, $value)
     {
         $oldValues = data_get($this->filters, $field, []);
-        $newValues = collect($oldValues)->filter(fn ($item) => $item['value'] != $value);
+        $newValues = collect($oldValues)->filter(fn ($item) => $item != $value);
         $this->filters[$field] = $newValues->count() > 0 ? $newValues->toArray() : [];
         $this->loadData();
     }
