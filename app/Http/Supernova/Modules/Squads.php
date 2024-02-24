@@ -38,7 +38,7 @@ class Squads extends Module
     public function fields(): array
     {
         return [
-            Field::make("name", "Name"),
+            Field::make("name", "Nome")->rules(["required"])
         ];
     }
 }

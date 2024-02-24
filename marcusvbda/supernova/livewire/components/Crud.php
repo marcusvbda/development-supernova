@@ -10,7 +10,6 @@ class Crud extends Component
 {
     public $module;
     public $entity;
-    public $editingContent = [];
     public $panels = [];
     public $values = [];
     public $options = [];
@@ -63,6 +62,7 @@ class Crud extends Component
 
     public function rules()
     {
+        request()->merge(["values" => $this->values]);
         $fields = $this->allFields();
         $rules = [];
         foreach ($fields as $field) {
@@ -158,7 +158,7 @@ class Crud extends Component
                 }
             }
         }
-        $module->onSave(data_get($this->editingContent, 'id'), $values);
+        $module->onSave(data_get($this->entity, 'id'), $values);
         $application = app()->make(config('supernova.application', Application::class));
         $application::message("success", "Registro salvo com sucesso");
         return redirect()->route('supernova.modules.index', ['module' => $module->id()]);

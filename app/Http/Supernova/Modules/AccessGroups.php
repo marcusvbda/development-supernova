@@ -6,6 +6,8 @@ use App\Models\AccessGroup;
 use marcusvbda\supernova\Column;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
+use Auth;
+use marcusvbda\supernova\Field;
 
 class AccessGroups extends Module
 {
@@ -35,28 +37,25 @@ class AccessGroups extends Module
         return $columns;
     }
 
-    // public function fields(): array
-    // {
-    //     return [
-    //         Field::make("name", "Name"),
-    //         Field::make("key", "Chave"),
-    //         Field::make("type", "Tipo")->type(FIELD_TYPES::SELECT)
-    //             ->options(PermissionType::class)
-    //     ];
-    // }
+    public function fields(): array
+    {
+        return [
+            Field::make("name", "Nome")->rules(["required"])
+        ];
+    }
 
-    // public function canDelete(): bool
-    // {
-    //     return false;
-    // }
+    public function canDelete(): bool
+    {
+        return Auth::user()->role === "root";
+    }
 
-    // public function canEdit(): bool
-    // {
-    //     return false;
-    // }
+    public function canEdit(): bool
+    {
+        return Auth::user()->role === "root";
+    }
 
-    // public function canCreate(): bool
-    // {
-    //     return false;
-    // }
+    public function canCreate(): bool
+    {
+        return Auth::user()->role === "root";
+    }
 }
