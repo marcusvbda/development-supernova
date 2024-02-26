@@ -9,4 +9,5 @@ enum FIELD_TYPES: string
     case TEXT = "text";
     case NUMBER = "number";
     case SELECT = "select";
+    case RESOURCE = "resource";
 }

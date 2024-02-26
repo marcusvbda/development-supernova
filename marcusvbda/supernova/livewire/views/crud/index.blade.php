@@ -50,11 +50,12 @@
                 </div>
             @endforeach
         </div>
-        <div class="mt-4 flex justify-end">
-            <button type="button" wire:click="save"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded transition dark:bg-gray-800 hover:dark:bg-gray-900 w-full md:w-auto">
-                Salvar
-            </button>
-        </div>
     @endforeach
+
+    <div class="mt-4 flex justify-end">
+        <button type="button" wire:click="save"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded transition dark:bg-gray-800 hover:dark:bg-gray-900 w-full md:w-auto">
+            Salvar
+        </button>
+    </div>
 </div>

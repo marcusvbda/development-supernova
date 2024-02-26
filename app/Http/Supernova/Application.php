@@ -62,4 +62,15 @@ class Application extends SupernovaApplication
             Permissions::class,
         ];
     }
+
+    public function menuUserNavbar(): array
+    {
+        $menu = parent::menuUserNavbar();
+        $items = data_get($menu, "items", []);
+        $menuItems = [
+            "Profile" => route('supernova.modules.details', ['module' => 'users', 'id' => Auth::user()->id]),
+        ];
+        $menu["items"] = [...$menuItems, ...$items];
+        return $menu;
+    }
 }

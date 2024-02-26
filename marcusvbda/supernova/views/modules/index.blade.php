@@ -10,14 +10,5 @@
             {!! Blade::render(implode(' ', $metricCards)) !!}
         </div>
     @endif
-    <section class="flex flex-col">
-        <h4 class="text-3xl text-neutral-800 font-bold dark:text-neutral-200 mt-3 mb-2 flex items-center gap-3 mt-6">
-            {{ $module->title('index') }}
-        </h4>
-        @livewire('supernova::datatable', [
-            'module' => $module->id(),
-            'sort' => $module->defaultSort(),
-            'lazy' => true,
-        ])
-    </section>
+    @include('supernova::modules.list', ['module' => $module])
 @endsection

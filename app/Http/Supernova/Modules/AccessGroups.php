@@ -8,6 +8,7 @@ use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
 use Auth;
 use marcusvbda\supernova\Field;
+use marcusvbda\supernova\FIELD_TYPES;
 
 class AccessGroups extends Module
 {
@@ -40,7 +41,9 @@ class AccessGroups extends Module
     public function fields(): array
     {
         return [
-            Field::make("name", "Nome")->rules(["required"])
+            Field::make("name", "Nome")->rules(["required"]),
+            Field::make("permissions", "Permissões")
+                ->resource(Permissions::class)
         ];
     }
 

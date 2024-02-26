@@ -7,7 +7,6 @@ class Panel
     public $fields = [];
     public $label;
     public $visible = true;
-    public $visibleOnDetails = true;
 
     public static function make($label): Panel
     {
@@ -28,12 +27,6 @@ class Panel
     public function canSee($val): Panel
     {
         $this->visible = $val;
-        return $this;
-    }
-
-    public function canSeeOnDetails($val): panel
-    {
-        $this->visibleOnDetails = $val;
         return $this;
     }
 }

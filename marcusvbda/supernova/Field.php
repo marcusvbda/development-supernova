@@ -6,6 +6,7 @@ class Field
 {
     public $field;
     public $label;
+    public $resource;
     public $noData;
     public $model;
     public $limit = 1;
@@ -18,7 +19,6 @@ class Field
     public $options_callback;
     public $options = [];
     public $visible = true;
-    public $visibleOnDetails = true;
 
     public static function make($field, $label = null): Field
     {
@@ -31,6 +31,13 @@ class Field
         $this->label = $label ? $label : $field;
         $this->noData = config("supernova.placeholder_no_data", "<span>   -   </span>");
         $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
+    }
+
+    public function resource($resource): Field
+    {
+        $this->resource = $resource;
+        $this->type = FIELD_TYPES::RESOURCE->value;
+        return $this;
     }
 
     public function type($type, $relation = null): Field
@@ -78,12 +85,6 @@ class Field
     public function detailCallback($callback): Field
     {
         $this->detailCallback = $callback;
-        return $this;
-    }
-
-    public function canSeeOnDetails($val): Field
-    {
-        $this->visibleOnDetails = $val;
         return $this;
     }
 

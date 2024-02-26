@@ -113,8 +113,7 @@ class Crud extends Component
 
     public function loadInputOptions($field)
     {
-        $module = $this->getModule();
-        $fields = $module->fields();
+        $fields = $this->allFields();
         $field = collect($fields)->first(function ($f) use ($field) {
             return $f->field == $field;
         });
@@ -158,10 +157,10 @@ class Crud extends Component
                 }
             }
         }
-        $module->onSave(data_get($this->entity, 'id'), $values);
+        $id = $module->onSave(data_get($this->entity, 'id'), $values);
         $application = app()->make(config('supernova.application', Application::class));
         $application::message("success", "Registro salvo com sucesso");
-        return redirect()->route('supernova.modules.index', ['module' => $module->id()]);
+        return redirect()->route('supernova.modules.details', ['module' => $module->id(), 'id' => $id]);
     }
 
     public function render()

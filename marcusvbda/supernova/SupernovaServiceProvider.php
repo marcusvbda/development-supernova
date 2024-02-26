@@ -6,7 +6,6 @@ use App\Http\Supernova\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Livewire\Livewire;
-use marcusvbda\supernova\livewire\components\Alert;
 
 class SupernovaServiceProvider extends ServiceProvider
 {

@@ -1,5 +1,5 @@
 @php
-    $all_is_selected = count($selected) == count($options);
+    $all_is_selected = count($selected) > 0 && count($selected) == count($options);
 @endphp
 <div class="relative" wire:init="{{ $onInit }}('{{ $index }}')">
     @if (!@$loaded_options[$index])

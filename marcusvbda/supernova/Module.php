@@ -239,7 +239,7 @@ class Module
     public function getVisibleFieldPanels($panelFallback = ""): array
     {
         $fieldsWithoutPanel = collect($this->fields())->filter(function ($field) {
-            return $field->visible && $field->visibleOnDetails && class_basename(get_class($field)) === "Field";
+            return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::RESOURCE->value;
         })->toArray();
         $panels = [];
 
@@ -250,10 +250,14 @@ class Module
 
         $visiblePanels = collect($this->fields())->filter(function ($panel) {
             $fieldsVisible = count(collect(@$panel->fields ?? [])->filter(function ($field) {
-                return $field->visible && $field->visibleOnDetails;
+                return $field->visible  && $field->type !== FIELD_TYPES::RESOURCE->value;
             })->toArray()) > 0;
-            return $panel->visible && $panel->visibleOnDetails && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
+            return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
         })->toArray();
+
+        // $fieldResources = collect($this->fields())->filter(function ($field) {
+        //     return $field->visible && $field->type !== FIELD_TYPES::RESOURCE->value;
+        // })->toArray();
 
         $panels = array_merge($panels, $visiblePanels);
         return $panels;
@@ -273,9 +277,10 @@ class Module
         $entity->delete();
     }
 
-    public function onSaved()
+    public function onSaved($id): int
     {
         $this->clearCacheQty();
+        return $id;
     }
 
     public function onPostSave($model, $values): void
@@ -288,13 +293,13 @@ class Module
         }
     }
 
-    public function onSave($id, $values): void
+    public function onSave($id, $values): int
     {
         $model = $id ? $this->makeModel()->findOrFail($id) : $this->makeModel();
         $model->fill($values['save']);
         $model->save();
 
         $this->onPostSave($model, $values['post_save']);
-        $this->onSaved();
+        return $this->onSaved($model->id);
     }
 }
