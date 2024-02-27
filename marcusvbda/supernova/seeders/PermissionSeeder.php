@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace marcusvbda\supernova\seeders;
 
 use App\Models\Permission;
 use App\Models\PermissionType;

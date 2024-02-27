@@ -33,6 +33,7 @@ class Datatable extends Component
     public $totalResults = 0;
     public $filters  = [];
     public $hasItems = false;
+    public $checkDeclaration = true;
     public $btnCreateText = "Create";
     public $moduleUrl = "/";
     public $queryInit = null;
@@ -84,7 +85,10 @@ class Datatable extends Component
     private function getAppModule()
     {
         $application = app()->make(config("supernova.application", Application::class));
-        return $application->getModule($this->module);
+        // if ($this->ignoreDeclaration) {
+        // dd($this->ignoreDeclaration);
+        // }
+        return $application->getModule($this->module, $this->checkDeclaration);
     }
 
     public function reloadSort($name, $oldName, $oldDirection)

@@ -7,6 +7,7 @@ use marcusvbda\supernova\Column;
 use marcusvbda\supernova\Field;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
+use marcusvbda\supernova\Panel;
 
 class Customers extends Module
 {
@@ -43,7 +44,16 @@ class Customers extends Module
     public function fields(): array
     {
         return [
-            Field::make("name", "Nome")->rules(["required"])
+            Panel::make("Informações")->fields([
+                Field::make("name", "Nome")->rules(["required"], ["required" => "O campo nome é obrigatório"]),
+                Field::make("phone", "Telefone")->mask("(99) 99999-9999"),
+                Field::make("website", "Site")->rules(["nullable", "url"]),
+            ]),
+            Panel::make("Responsável")->fields([
+                Field::make("contact", "Nome do contato"),
+                Field::make("phone_contact", "Telefone do contato")->mask("(99) 99999-9999"),
+                Field::make("email_contact", "Email do responsável")->rules(["nullable", "email"]),
+            ])
         ];
     }
 }

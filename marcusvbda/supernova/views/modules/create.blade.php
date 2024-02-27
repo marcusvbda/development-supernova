@@ -10,7 +10,6 @@
     <section class="flex flex-col">
         @livewire('supernova::crud', [
             'module' => $module->id(),
-            'lazy' => true,
         ])
     </section>
 @endsection

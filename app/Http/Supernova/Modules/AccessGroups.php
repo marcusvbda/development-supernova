@@ -42,13 +42,10 @@ class AccessGroups extends Module
     public function fields(): array
     {
         return [
-            Field::make("name", "Nome")->rules(["required"]),
+            Field::make("name", "Nome")->rules(["required"], ["required" => "O campo nome é obrigatório"]),
             Field::make("permissions", "Permissões")->type(FIELD_TYPES::SELECT)
                 ->options(Permission::class, 'permissions')
                 ->multiple()
-            // Field::make("permissions", "Permissões")
-            //     ->resource(Permissions::class)
-            //     ->query(fn ($row) => $row->permissions())
         ];
     }
 

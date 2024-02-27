@@ -9,7 +9,7 @@
 <div class="flex flex-col pb-10">
     @foreach ($fieldPanels as $key => $panel)
         <h4
-            class="text-2xl md:text-3xl text-neutral-800 font-bold dark:text-neutral-200 flex items-center gap-3 flex justify-between flex-col md:flex-row gap-2 md:gap-3 mt-6 mb-2">
+            class="text-2xl md:text-3xl text-neutral-800 font-normal dark:text-neutral-200 flex items-center gap-3 flex justify-between flex-col md:flex-row gap-2 md:gap-3 mt-6 mb-2">
             <span class="order-2 md:order-1">{{ data_get($panel, 'label') }}</span>
             @if ($key === 0 && ($canEdit || $canDelete))
                 <div class="text-sm order-1 flex justify-end">
@@ -61,6 +61,7 @@
                 @include('supernova::modules.resource-list', [
                     'module' => $fieldResource,
                     'queryInit' => $module . '.' . $entity->id . '.' . $field->field,
+                    'checkDeclaration' => false,
                 ])
             @endforeach
         </div>

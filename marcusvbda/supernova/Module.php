@@ -119,9 +119,7 @@ class Module
     {
         $moduleId = $this->id();
         $cards[] = <<<BLADE
-        @livewire('supernova::counter-card',[
-                'module' => '$moduleId',
-            ])
+            @livewire('supernova::counter-card',['module' => '$moduleId'])
         BLADE;
         return $cards;
     }

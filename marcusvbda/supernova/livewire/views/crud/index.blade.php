@@ -3,11 +3,13 @@
     $application = app()->make(config('supernova.application', Application::class));
     $appModule = $application->getModule($module);
     $panels = $appModule->getVisibleFieldPanels($panelFallback);
+    $fieldPanels = collect($panels)->where('type', 'fields')->toArray();
+    $resourcePanels = collect($panels)->where('type', 'resources')->toArray();
 @endphp
 <div class="flex flex-col pb-10">
-    @foreach ($panels as $key => $panel)
+    @foreach ($fieldPanels as $key => $panel)
         <h4
-            class="text-2xl md:text-3xl text-neutral-800 font-bold dark:text-neutral-200 flex items-center gap-3 gap-2 md:gap-3 mt-6 mb-2">
+            class="text-2xl md:text-3xl text-neutral-800 font-normal dark:text-neutral-200 flex items-center gap-3 gap-2 md:gap-3 mt-6 mb-2">
             <span class="order-2 md:order-1">{{ data_get($panel, 'label') }}</span>
         </h4>
         @php
@@ -58,4 +60,21 @@
             Salvar
         </button>
     </div>
+
+    @if ($crudType !== 'create')
+        @foreach ($resourcePanels as $key => $panel)
+            <div class="flex flex-col">
+                @foreach (@$panel->fields as $field)
+                    @php
+                        $fieldResource = app()->make($field->resource);
+                    @endphp
+                    @include('supernova::modules.resource-list', [
+                        'module' => $fieldResource,
+                        'queryInit' => $module . '.' . $entity->id . '.' . $field->field,
+                        'checkDeclaration' => false,
+                    ])
+                @endforeach
+            </div>
+        @endforeach
+    @endif
 </div>

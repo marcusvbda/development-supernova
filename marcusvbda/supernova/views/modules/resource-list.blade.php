@@ -7,5 +7,6 @@
         'sort' => $module->defaultSort(),
         'lazy' => true,
         'queryInit' => @$queryInit,
+        'checkDeclaration' => @$checkDeclaration ? true : false,
     ])
 </section>

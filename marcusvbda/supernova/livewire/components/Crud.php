@@ -5,7 +5,9 @@ namespace marcusvbda\supernova\livewire\components;
 use App\Http\Supernova\Application;
 use Livewire\Component;
 use marcusvbda\supernova\FIELD_TYPES;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class Crud extends Component
 {
     public $module;
@@ -16,6 +18,7 @@ class Crud extends Component
     public $loaded_options = [];
     public $panelFallback = 'Cadastro de';
     public $type = 'create';
+    public $crudType = 'create';
 
     public function placeholder()
     {
@@ -41,6 +44,7 @@ class Crud extends Component
                 }
             }
         }
+        $this->crudType = $this->type;
     }
 
     public function allFields()

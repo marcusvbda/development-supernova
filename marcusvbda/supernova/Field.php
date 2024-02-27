@@ -13,6 +13,7 @@ class Field
     public $limit = 1;
     public $multiple = false;
     public $detailCallback;
+    public $mask = "";
     public $type = "text";
     public $rules = [];
     public $messages = [];
@@ -38,6 +39,12 @@ class Field
     {
         $this->resource = $resource;
         $this->type = FIELD_TYPES::RESOURCE->value;
+        return $this;
+    }
+
+    public function mask($mask): Field
+    {
+        $this->mask = $mask;
         return $this;
     }
 

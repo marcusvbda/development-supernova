@@ -3,6 +3,7 @@
 namespace App\Http\Supernova;
 
 use App\Http\Supernova\Modules\AccessGroups;
+use App\Http\Supernova\Modules\Competences;
 use App\Http\Supernova\Modules\Customers;
 use App\Http\Supernova\Modules\Permissions;
 use App\Http\Supernova\Modules\Projects;
@@ -16,7 +17,6 @@ class Application extends SupernovaApplication
 {
     public function darkMode(): bool
     {
-        // return true;
         return Auth::check() && Auth::user()->dark_mode ? true : false;
     }
 
@@ -49,6 +49,7 @@ class Application extends SupernovaApplication
     {
         return [
             // times
+            Competences::class,
             Squads::class,
             Teams::class,
             Users::class,

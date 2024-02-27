@@ -11,7 +11,6 @@
     <section class="flex flex-col">
         @livewire('supernova::crud', [
             'module' => $module->id(),
-            'lazy' => true,
             'entity' => $entity,
             'panelFallback' => 'Edição de',
             'type' => 'edit',

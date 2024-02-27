@@ -44,7 +44,7 @@ class Application
 
     public function darkMode(): bool
     {
-        return true;
+        return config("supernova.default_theme", "light") === "dark";
     }
 
     public function menuUserNavbar(): array
@@ -86,12 +86,16 @@ class Application
         return "favicon.ico";
     }
 
-    public function getModule($module): Module
+    public function getModule($module, $checkDeclaration = true): Module
     {
         $module = str_replace("-", " ", $module);
         $module = str_replace(" ", "", ucwords($module));
         $module = $this->modulesNamespace . $module;
         if (!class_exists($module)) abort(404);
+        if ($checkDeclaration) {
+            $modules = $this->modules();
+            if (!in_array($module, $modules)) abort(404);
+        }
         return app()->make($module);
     }
 
