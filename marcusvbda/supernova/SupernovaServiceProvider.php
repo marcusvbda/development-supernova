@@ -43,6 +43,7 @@ class SupernovaServiceProvider extends ServiceProvider
         Livewire::component('supernova::breadcrumb', $this->novaApp->breadcrumb());
         Livewire::component('supernova::counter-card', $this->novaApp->counterCard());
         Livewire::component('supernova::dashboard', $this->novaApp->dashboard());
+        Livewire::component('supernova::alerts', $this->novaApp->alerts());
         Livewire::component('supernova::crud', $this->novaApp->crud());
     }
 }

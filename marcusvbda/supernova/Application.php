@@ -4,6 +4,7 @@ namespace marcusvbda\supernova;
 
 use App\Models\User;
 use Auth;
+use marcusvbda\supernova\livewire\components\Alerts;
 use marcusvbda\supernova\livewire\components\Breadcrumb;
 use marcusvbda\supernova\livewire\components\CounterCard;
 use marcusvbda\supernova\livewire\components\Crud;
@@ -136,6 +137,11 @@ class Application
     public function details(): string
     {
         return Details::class;
+    }
+
+    public function alerts(): string
+    {
+        return Alerts::class;
     }
 
     public function UserModel(): string
