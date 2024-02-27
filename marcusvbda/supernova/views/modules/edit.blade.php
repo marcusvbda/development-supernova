@@ -7,6 +7,10 @@
     @livewire('supernova::breadcrumb', [
         'entityUrl' => route('supernova.modules.edit', ['module' => $module->id(), 'id' => $entity->id]),
         'entityId' => $entity->id,
+        'moduleId' => $module->id(),
+        'parentId' => @$parent_id,
+        'parentModule' => @$parent_module,
+        'moduleId' => $module->id(),
     ])
     <section class="flex flex-col">
         @livewire('supernova::crud', [
@@ -14,6 +18,8 @@
             'entity' => $entity,
             'panelFallback' => 'Edição de',
             'type' => 'edit',
+            'parentId' => @$parent_id,
+            'parentModule' => @$parent_module,
         ])
     </section>
 @endsection

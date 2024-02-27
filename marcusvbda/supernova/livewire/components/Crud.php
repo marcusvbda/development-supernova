@@ -19,6 +19,8 @@ class Crud extends Component
     public $panelFallback = 'Cadastro de';
     public $type = 'create';
     public $crudType = 'create';
+    public $parentId = null;
+    public $parentModule = null;
 
     public function placeholder()
     {
@@ -113,7 +115,7 @@ class Crud extends Component
     private function getModule()
     {
         $application = app()->make(config('supernova.application', Application::class));
-        return $application->getModule($this->module);
+        return $application->getModule($this->module, false);
     }
 
     public function loadInputOptions($field)
@@ -146,25 +148,31 @@ class Crud extends Component
     public function save()
     {
         $this->validate();
+        $isField = $this->parentId && $this->parentModule;
         $module = $this->getModule();
         $values = ['save' => [], 'post_save' => []];
         $panels = $module->getVisibleFieldPanels();
         foreach ($panels as $panel) {
             foreach ($panel->fields as $field) {
-                if ($field->type == FIELD_TYPES::SELECT->value) {
-                    if ($field->multiple) {
-                        $values['post_save'][$field->field] = array_map(fn ($item) => $item, data_get($this->values, $field->field, []) ?? []);
+                if ($field->type !== FIELD_TYPES::MODULE->value) {
+                    if ($field->type == FIELD_TYPES::SELECT->value) {
+                        if ($field->multiple) {
+                            $values['post_save'][$field->field] = array_map(fn ($item) => $item, data_get($this->values, $field->field, []) ?? []);
+                        } else {
+                            $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0");
+                        }
                     } else {
-                        $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0");
+                        $values['save'][$field->field] = $this->values[$field->field];
                     }
-                } else {
-                    $values['save'][$field->field] = $this->values[$field->field];
                 }
             }
         }
-        $id = $module->onSave(data_get($this->entity, 'id'), $values);
+        $id = $module->onSave(data_get($this->entity, 'id'), $values, ['type' => $this->crudType, 'parent_id' => $this->parentId, 'parent_module' => $this->parentModule]);
         $application = app()->make(config('supernova.application', Application::class));
         $application::message("success", "Registro salvo com sucesso");
+        if ($isField) {
+            return redirect()->route('supernova.modules.details', ['module' => $this->parentModule, 'id' => $this->parentId]);
+        }
         return redirect()->route('supernova.modules.details', ['module' => $module->id(), 'id' => $id]);
     }
 

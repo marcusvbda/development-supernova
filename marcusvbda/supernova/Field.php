@@ -22,6 +22,11 @@ class Field
     public $options = [];
     public $visible = true;
 
+    public function isNamespace($val)
+    {
+        return strpos($val, "\\") !== false;
+    }
+
     public static function make($field, $label = null): Field
     {
         return new static($field, $label);
@@ -30,16 +35,17 @@ class Field
     public function __construct($field, $label = null)
     {
         $this->field = $field;
-        $this->label = $label ? $label : $field;
-        $this->noData = config("supernova.placeholder_no_data", "<span>   -   </span>");
-        $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
-    }
-
-    public function resource($resource): Field
-    {
-        $this->resource = $resource;
-        $this->type = FIELD_TYPES::RESOURCE->value;
-        return $this;
+        if (!$this->isNamespace($field)) {
+            $this->label = $label ? $label : $field;
+            $this->noData = config("supernova.placeholder_no_data", "<span>   -   </span>");
+            $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
+        } else {
+            $this->module = $field;
+            $parentModule = app()->make($field);
+            $this->field = $parentModule->id();
+            $this->type = FIELD_TYPES::MODULE->value;
+            $this->query = fn ($row) => $row->{$this->field}();
+        }
     }
 
     public function mask($mask): Field
@@ -112,12 +118,6 @@ class Field
     public function optionKeys($keys): Field
     {
         $this->option_keys = $keys;
-        return $this;
-    }
-
-    public function query($query): Field
-    {
-        $this->query = $query;
         return $this;
     }
 

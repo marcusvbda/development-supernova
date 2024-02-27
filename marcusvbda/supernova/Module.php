@@ -248,7 +248,7 @@ class Module
     public function getVisibleFieldPanels($panelFallback = ""): array
     {
         $fieldsWithoutPanel = collect($this->fields())->filter(function ($field) {
-            return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::RESOURCE->value;
+            return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::MODULE->value;
         })->toArray();
         $panels = [];
 
@@ -259,7 +259,7 @@ class Module
 
         $visiblePanels = collect($this->fields())->filter(function ($panel) {
             $fieldsVisible = count(collect(@$panel->fields ?? [])->filter(function ($field) {
-                return $field->visible  && $field->type !== FIELD_TYPES::RESOURCE->value;
+                return $field->visible  && $field->type !== FIELD_TYPES::MODULE->value;
             })->toArray()) > 0;
             return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
         })->toArray();
@@ -267,7 +267,7 @@ class Module
         $panels = array_merge($panels, $visiblePanels);
 
         $fieldResources = collect($this->fields())->filter(function ($field) {
-            return $field->visible && $field->type === FIELD_TYPES::RESOURCE->value;
+            return $field->visible && $field->type === FIELD_TYPES::MODULE->value;
         })->toArray();
 
         if (count($fieldResources)) {
@@ -307,10 +307,24 @@ class Module
         }
     }
 
-    public function onSave($id, $values): int
+    public function onSave($id, $values, $info = []): int
     {
-        $model = $id ? $this->makeModel()->findOrFail($id) : $this->makeModel();
-        $model->fill($values['save']);
+        $parent_id = data_get($info, "parent_id");
+        $parent_module = data_get($info, "parent_module");
+        if ($parent_id && $parent_module) {
+            $application = app()->make(config('supernova.application', Application::class));
+            $parentModule = $application->getModule($parent_module, false);
+            $relation = $this->id();
+            $parentModel = $parentModule->makeModel()->findOrFail($parent_id);
+            $model = $id ? $parentModel->{$relation}()->findOrFail($id) : $parentModel->{$relation}()->make();
+            $model->fill($values['save']);
+            $model->save();
+
+            return $this->onSaved($model->id);
+        } else {
+            $model = $id ? $this->makeModel()->findOrFail($id) : $this->makeModel();
+            $model->fill($values['save']);
+        }
         $model->save();
 
         $this->onPostSave($model, $values['post_save']);

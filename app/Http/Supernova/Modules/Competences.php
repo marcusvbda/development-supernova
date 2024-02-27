@@ -40,9 +40,7 @@ class Competences extends Module
     {
         return [
             Field::make("name", "Nome")->rules(["required"]),
-            Field::make("skills", "Skills")
-                ->resource(Skills::class)
-                ->query(fn ($row) => $row->skills())
+            Field::make(Skills::class)
         ];
     }
 }

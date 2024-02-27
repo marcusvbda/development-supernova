@@ -12,6 +12,8 @@ class Details extends Component
     public $panels = [];
     public $canDelete = false;
     public $canEdit = false;
+    public $parentId = null;
+    public $parentModule = null;
 
     public function placeholder()
     {
@@ -21,12 +23,18 @@ class Details extends Component
     private function getModule()
     {
         $application = app()->make(config('supernova.application', Application::class));
-        return $application->getModule($this->module);
+        return $application->getModule($this->module, false);
     }
 
     public function redirectToEdit()
     {
         $module = $this->getModule();
+        if ($this->parentId && $this->parentModule) {
+            return redirect()->route('supernova.modules.field-edit', [
+                'module' => $this->parentModule, 'id' => $this->parentId,
+                'field' => $module->id(), 'fieldId' =>  $this->entity->id
+            ]);
+        }
         return redirect()->route('supernova.modules.edit', ['module' => $module->id(), 'id' => $this->entity->id]);
     }
 
@@ -36,6 +44,11 @@ class Details extends Component
         $module->delete($this->entity);
         $application = app()->make(config('supernova.application', Application::class));
         $application::message("success", "Registro deletado com sucesso");
+        if ($this->parentId && $this->parentModule) {
+            return redirect()->route('supernova.modules.details', [
+                'module' => $this->parentModule, 'id' => $this->parentId
+            ]);
+        }
         return redirect()->route('supernova.modules.index', ['module' => $module->id()]);
     }
 

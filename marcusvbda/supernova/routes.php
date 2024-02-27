@@ -12,6 +12,7 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('{module}/{id}', [ModulesController::class, 'details'])->name('supernova.modules.details');
         Route::get('{module}/{id}/edit', [ModulesController::class, 'edit'])->name('supernova.modules.edit');
         Route::get('{module}/{id}/{field}/create', [ModulesController::class, 'fieldCreate'])->name('supernova.modules.field-create');
+        Route::get('{module}/{id}/{field}/{fieldId}', [ModulesController::class, 'fieldDetails'])->name('supernova.modules.field-details');
         Route::get('{module}/{id}/{field}/{fieldId}/edit', [ModulesController::class, 'fieldEdit'])->name('supernova.modules.field-edit');
     });
 });

@@ -64,13 +64,41 @@ class ModulesController extends Controller
         return view("supernova::auth.login", compact("redirect"));
     }
 
-    public function fieldCreate($resource, $id, $field)
+    public function fieldCreate($parentModule, $parentId, $fieldModule)
     {
-        dd("fieldCreate", $resource, $id, $field);
+        $module = $this->application->getModule($fieldModule, false);
+        if (!$module->canCreate()) {
+            abort(403);
+        }
+        $createView = $module->create();
+        $createView->parent_module = $parentModule;
+        $createView->parent_id = $parentId;
+        return $createView;
     }
 
-    public function fieldEdit($resource, $id, $field, $fieldId)
+    public function fieldDetails($parentModule, $parentId, $fieldModule, $fieldModuleId)
     {
-        dd("fieldUpdate", $resource, $id, $field, $fieldId);
+        $module = $this->application->getModule($fieldModule, false);
+        if (!$module->canViewIndex()) {
+            abort(403);
+        }
+        $target = $module->makeModel()->findOrFail($fieldModuleId);
+        $detailsView = $module->details($target);
+        $detailsView->parent_module = $parentModule;
+        $detailsView->parent_id = $parentId;
+        return $detailsView;
+    }
+
+    public function fieldEdit($parentModule, $parentId, $fieldModule, $fieldModuleId)
+    {
+        $module = $this->application->getModule($fieldModule, false);
+        if (!$module->canEdit()) {
+            abort(403);
+        }
+        $target = $module->makeModel()->findOrFail($fieldModuleId);
+        $editView = $module->edit($target);
+        $editView->parent_module = $parentModule;
+        $editView->parent_id = $parentId;
+        return $editView;
     }
 }

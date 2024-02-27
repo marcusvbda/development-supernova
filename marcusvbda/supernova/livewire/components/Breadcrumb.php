@@ -10,30 +10,31 @@ class Breadcrumb extends Component
     public $items = [];
     public $entityUrl = null;
     public $entityId = null;
+    public $parentId = null;
+    public $parentModule = null;
+    public $moduleId = null;
+
     public function mount()
     {
         $application = app()->make(config("supernova.application", Application::class));
         $route = request()->route();
         $currentRoute = $route->getName();
-        $currentRouteParams = $route->parameters();
-        $moduleId = data_get($currentRouteParams, "module");
         $this->items[] = [
             "title" => $application->homeTitle(),
             "route" => route("supernova.home"),
         ];
-        if ($currentRoute != "supernova.home" && $moduleId) {
+        if ($currentRoute != "supernova.home" && $this->moduleId) {
+            $module = $application->getModule($this->moduleId, false);
             if ($currentRoute === "supernova.modules.index") {
-                $module = $application->getModule($moduleId);
                 $this->items[] = [
                     "title" => $module->name()[1],
-                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                    "route" => route("supernova.modules.index", ["module" => $this->moduleId]),
                 ];
             }
             if ($currentRoute === "supernova.modules.details") {
-                $module = $application->getModule($moduleId);
                 $this->items[] = [
                     "title" => $module->name()[1],
-                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                    "route" => route("supernova.modules.index", ["module" => $this->moduleId]),
                 ];
                 $this->items[] = [
                     "title" => $module->name()[0] . " #" . $this->entityId,
@@ -41,29 +42,76 @@ class Breadcrumb extends Component
                 ];
             }
             if ($currentRoute === "supernova.modules.create") {
-                $module = $application->getModule($moduleId);
                 $this->items[] = [
                     "title" => $module->name()[1],
-                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                    "route" => route("supernova.modules.index", ["module" => $this->moduleId]),
                 ];
                 $this->items[] = [
                     "title" => $module->title("create"),
-                    "route" => route("supernova.modules.create", ["module" => $moduleId]),
+                    "route" => route("supernova.modules.create", ["module" => $this->moduleId]),
                 ];
             }
             if ($currentRoute === "supernova.modules.edit") {
-                $module = $application->getModule($moduleId);
                 $this->items[] = [
                     "title" => $module->name()[1],
-                    "route" => route("supernova.modules.index", ["module" => $moduleId]),
+                    "route" => route("supernova.modules.index", ["module" => $this->moduleId]),
                 ];
                 $this->items[] = [
                     "title" => $module->name()[0] . " #" . $this->entityId,
-                    "route" => route("supernova.modules.details", ["module" => $moduleId, 'id' => $this->entityId]),
+                    "route" => route("supernova.modules.details", ["module" => $this->moduleId, 'id' => $this->entityId]),
                 ];
                 $this->items[] = [
                     "title" => $module->title("edit"),
-                    "route" => route("supernova.modules.edit", ["module" => $moduleId, 'id' => $this->entityId]),
+                    "route" => route("supernova.modules.edit", ["module" => $this->moduleId, 'id' => $this->entityId]),
+                ];
+            }
+            if ($currentRoute === "supernova.modules.field-create") {
+                $pModule = $application->getModule($this->parentModule, false);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $this->parentModule]),
+                ];
+                $this->items[] = [
+                    "title" => $pModule->name()[0] . " #" . $this->parentId,
+                    "route" => route("supernova.modules.details", ["module" => $this->parentModule, 'id' => $this->parentId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->title("create"),
+                    "route" => route("supernova.modules.create", ["module" => $this->moduleId]),
+                ];
+            }
+            if ($currentRoute === "supernova.modules.field-details") {
+                $pModule = $application->getModule($this->parentModule, false);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $this->parentModule]),
+                ];
+                $this->items[] = [
+                    "title" => $pModule->name()[0] . " #" . $this->parentId,
+                    "route" => route("supernova.modules.details", ["module" => $this->parentModule, 'id' => $this->parentId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->name()[0] . " #" . $this->entityId,
+                    "route" => $this->entityUrl
+                ];
+            }
+            if ($currentRoute === "supernova.modules.field-edit") {
+                $pModule = $application->getModule($this->parentModule, false);
+                $this->items[] = [
+                    "title" => $module->name()[1],
+                    "route" => route("supernova.modules.index", ["module" => $this->parentModule]),
+                ];
+                $this->items[] = [
+                    "title" => $pModule->name()[0] . " #" . $this->parentId,
+                    "route" => route("supernova.modules.details", ["module" => $this->parentModule, 'id' => $this->parentId]),
+                ];
+                $this->items[] = [
+                    "title" => $module->name()[0] . " #" . $this->entityId,
+                    "route" => $this->entityUrl
+                ];
+                $this->items[] = [
+                    "title" => $module->title("edit"),
+                    "route" => route("supernova.modules.edit", ["module" => $this->moduleId, 'id' => $this->entityId]),
                 ];
             }
         }
