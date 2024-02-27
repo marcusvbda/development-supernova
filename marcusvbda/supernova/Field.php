@@ -9,6 +9,7 @@ class Field
     public $resource;
     public $noData;
     public $model;
+    public $query;
     public $limit = 1;
     public $multiple = false;
     public $detailCallback;
@@ -49,14 +50,27 @@ class Field
         if ($this->type === FIELD_TYPES::SELECT->value) {
             $this->detailCallback = function ($entity)  use ($relation) {
                 if (!$this->model) {
-                    $value = @$entity?->{$this->field} ?? null;
-                    $option = collect($this->options)->first(fn ($row) => $row["value"] == $value);
-                    return $option ? $option["label"] : $this->noData;
+                    if (!$this->multiple) {
+                        $value = @$entity?->{$this->field} ?? null;
+                        $option = collect($this->options)->first(fn ($row) => $row["value"] == $value);
+                        return $option ? $option["label"] : $this->noData;
+                    } else {
+                        $value = @$entity?->{$this->field} ?? [];
+                        $valueContent = collect($this->options)->filter(fn ($row) => in_array($row["value"], $value))->map(fn ($row) => $row["label"])->implode(", ");
+                        return $valueContent ? $valueContent : $this->noData;
+                    }
                 } else {
-                    $value = @$entity?->{$relation ? $relation : $this->field} ?? null;
-                    if (!$value) return $this->noData;
-                    $valueContent = @$value?->{data_get($this->option_keys, 'label')} ?? null;
-                    return $valueContent ? $valueContent : $this->noData;
+                    if (!$this->multiple) {
+                        $value = @$entity?->{$relation ? $relation : $this->field} ?? null;
+                        if (!$value) return $this->noData;
+                        $valueContent = @$value?->{data_get($this->option_keys, 'label')} ?? null;
+                        return $valueContent ? $valueContent : $this->noData;
+                    } else {
+                        $value = @$entity?->{$relation ? $relation : $this->field} ?? [];
+                        if (count($value) == 0) return $this->noData;
+                        $valueContent = $value->map(fn ($row) => $row->{data_get($this->option_keys, 'label')})->implode(", ");
+                        return $valueContent ? $valueContent : $this->noData;
+                    }
                 }
             };
 
@@ -91,6 +105,12 @@ class Field
     public function optionKeys($keys): Field
     {
         $this->option_keys = $keys;
+        return $this;
+    }
+
+    public function query($query): Field
+    {
+        $this->query = $query;
         return $this;
     }
 

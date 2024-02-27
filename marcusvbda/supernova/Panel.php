@@ -6,16 +6,18 @@ class Panel
 {
     public $fields = [];
     public $label;
+    public $type = "fields";
     public $visible = true;
 
-    public static function make($label): Panel
+    public static function make($label, $type = "fields"): Panel
     {
-        return new static($label);
+        return new static($label, $type);
     }
 
-    public function __construct($label)
+    public function __construct($label, $type)
     {
         $this->label = $label;
+        $this->type = $type;
     }
 
     public function fields($fields)

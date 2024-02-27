@@ -63,4 +63,14 @@ class ModulesController extends Controller
         $redirect = request()->get("redirect") ?? "/";
         return view("supernova::auth.login", compact("redirect"));
     }
+
+    public function fieldCreate($resource, $id, $field)
+    {
+        dd("fieldCreate", $resource, $id, $field);
+    }
+
+    public function fieldEdit($resource, $id, $field, $fieldId)
+    {
+        dd("fieldUpdate", $resource, $id, $field, $fieldId);
+    }
 }

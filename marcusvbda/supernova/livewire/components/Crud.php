@@ -30,7 +30,8 @@ class Crud extends Component
             foreach ($fields as $field) {
                 if ($field->type === FIELD_TYPES::SELECT->value) {
                     if ($field->multiple) {
-                        // 
+                        $value = data_get($this->entity, $field->field);
+                        $this->values[$field->field] = $value ? $value->pluck("id")->toArray() : [];
                     } else {
                         $value = data_get($this->entity, $field->field);
                         $this->values[$field->field] = $value ? [$value] : [];

@@ -3,6 +3,7 @@
 namespace App\Http\Supernova\Modules;
 
 use App\Models\AccessGroup;
+use App\Models\Permission;
 use marcusvbda\supernova\Column;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
@@ -42,8 +43,12 @@ class AccessGroups extends Module
     {
         return [
             Field::make("name", "Nome")->rules(["required"]),
-            Field::make("permissions", "Permissões")
-                ->resource(Permissions::class)
+            Field::make("permissions", "Permissões")->type(FIELD_TYPES::SELECT)
+                ->options(Permission::class, 'permissions')
+                ->multiple()
+            // Field::make("permissions", "Permissões")
+            //     ->resource(Permissions::class)
+            //     ->query(fn ($row) => $row->permissions())
         ];
     }
 

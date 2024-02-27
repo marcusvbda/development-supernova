@@ -2,6 +2,7 @@
 
 namespace marcusvbda\supernova;
 
+use Illuminate\Database\Eloquent\Collection;
 use  Illuminate\View\View;
 
 class Module
@@ -47,11 +48,21 @@ class Module
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $name));
     }
 
-    public function makeModel()
+    public function makeModel($init = null): mixed
     {
-        $query = app()->make($this->model());
-        //custom conditions
-        return $query;
+        if (!$init) {
+            return app()->make($this->model());
+        } else {
+            $splitted = explode(".", $init);
+            if (count($splitted) !== 3) return app()->make($this->model());
+            $application = app()->make(config('supernova.application', Application::class));
+            $module = $application->getModule($splitted[0]);
+            $field = collect($module->fields())->where("field", $splitted[2])->first();
+            if (!$field) return app()->make($this->model());
+            $model = $module->makeModel()->findOrFail($splitted[1]);
+            $queryAction = $field->query;
+            return $queryAction($model);
+        }
     }
 
     public function canViewIndex(): bool
@@ -255,11 +266,15 @@ class Module
             return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
         })->toArray();
 
-        // $fieldResources = collect($this->fields())->filter(function ($field) {
-        //     return $field->visible && $field->type !== FIELD_TYPES::RESOURCE->value;
-        // })->toArray();
-
         $panels = array_merge($panels, $visiblePanels);
+
+        $fieldResources = collect($this->fields())->filter(function ($field) {
+            return $field->visible && $field->type === FIELD_TYPES::RESOURCE->value;
+        })->toArray();
+
+        if (count($fieldResources)) {
+            $panels[] = Panel::make("", "resources")->fields($fieldResources);
+        }
         return $panels;
     }
 
@@ -286,9 +301,10 @@ class Module
     public function onPostSave($model, $values): void
     {
         foreach ($values as $field => $value) {
-            $callback = $model->{$value}();
-            if ($callback && is_callable($callback)) {
-                $callback()->sync($value);
+            $callback = $model->{$field}();
+            $isCollection = $callback instanceof Collection;
+            if ($callback && !$isCollection) {
+                $callback->sync($value);
             }
         }
     }

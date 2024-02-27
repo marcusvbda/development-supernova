@@ -12,6 +12,7 @@
     'extraClass' => @$errors->has($formIndex) ? 'dark:border-red-500' : '',
     'onInit' => 'loadInputOptions',
     'limit' => data_get($field, 'limit'),
+    'option_size' => '200px',
 ])
 @error($formIndex)
     <div class="mt-1 text-sm text-red-500 dark:text-red-400">

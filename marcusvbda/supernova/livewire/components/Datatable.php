@@ -35,6 +35,7 @@ class Datatable extends Component
     public $hasItems = false;
     public $btnCreateText = "Create";
     public $moduleUrl = "/";
+    public $queryInit = null;
 
     public function updateFilterValue($field, $value, $label, $type)
     {
@@ -70,7 +71,13 @@ class Datatable extends Component
         $this->searchable = collect($this->columns)->filter(fn ($row) => $row["searchable"])->count() > 0;
         $this->filterable = collect($this->columns)->filter(fn ($row) => $row["filterable"])->count() > 0;
         $this->btnCreateText = $module->createBtnText();
-        $this->moduleUrl = route("supernova.modules.index", $this->module);
+        if ($this->queryInit) {
+            $urlSplitted = explode(".", $this->queryInit);
+            $this->moduleUrl = route("supernova.modules.field-create", ['module' => $urlSplitted[0], 'id' => $urlSplitted[1], 'field' => $urlSplitted[2]]);
+            $this->moduleUrl = str_replace("/create", "", $this->moduleUrl);
+        } else {
+            $this->moduleUrl = route("supernova.modules.index", $this->module);
+        }
         $this->perPageOptions = $module->perPage();
     }
 
@@ -109,7 +116,7 @@ class Datatable extends Component
         $sort = explode("|", $this->sort);
         $module = $this->getAppModule();
         $this->perPage = in_array($this->perPage, $this->perPageOptions) ? $this->perPage : $this->perPageOptions[0];
-        $query = $module->applyFilters($module->makeModel(), $this->searchText, $this->filters, $sort);
+        $query = $module->applyFilters($module->makeModel($this->queryInit), $this->searchText, $this->filters, $sort);
         $total = $query->count();
         $items = $query->cursorPaginate($this->perPage, ['*'], 'cursor', Cursor::fromEncoded($this->cursor));
         $this->hasNextCursor = $items->hasMorePages();

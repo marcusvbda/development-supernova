@@ -12,7 +12,7 @@
                     class="lock pl-4 pr-10 w-full bg-white rounded-md border font-normal py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 sm:text-sm sm:leading-6 px-3 dark:bg-gray-800 dark:border-gray-800 dark:text-gray-50 {{ @$extraClass ? $extraClass : '' }}">
                     <option></option>
                     @foreach ($options as $option)
-                        @if (!in_array($option['value'], array_column($selected, 'value')))
+                        @if (!in_array($option['value'], $selected))
                             <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                         @endif
                     @endforeach
@@ -20,7 +20,8 @@
             @endif
         </div>
         @if (count($selected) > 0)
-            <div class="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-1 my-2">
+            <div
+                class="grid grid-cols-[repeat(auto-fill,minmax({{ @$option_size ? $option_size : '100px' }},1fr))] gap-1 my-2">
                 @foreach ($selected as $s)
                     @php
                         $selectedLabel = @collect($options)->where('value', $s)->first()['label'];

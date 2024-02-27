@@ -6,5 +6,6 @@
         'module' => $module->id(),
         'sort' => $module->defaultSort(),
         'lazy' => true,
+        'queryInit' => @$queryInit,
     ])
 </section>
