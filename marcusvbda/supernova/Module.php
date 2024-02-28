@@ -234,7 +234,7 @@ class Module
         return "Criar " . strtolower($name[0]);
     }
 
-    public function fields(): array
+    public function fields($row): array
     {
         $tableColumns = $this->getTableColumns();
         $fields = [];
@@ -245,36 +245,45 @@ class Module
         return $fields;
     }
 
-    public function getVisibleFieldPanels($panelFallback = ""): array
+    public function getVisibleFieldPanels($panelFallback = "", $entity = null): array
     {
-        $fieldsWithoutPanel = collect($this->fields())->filter(function ($field) {
+        $fields = $this->fields($entity);
+        $fieldsWithoutPanel = collect($fields)->filter(function ($field) {
             return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::MODULE->value;
         })->toArray();
+
         $panels = [];
 
         if (count($fieldsWithoutPanel)) {
-            $title =  strtolower($this->name()[0]);
-            $panels[] = Panel::make($panelFallback ? ($panelFallback . ' ' . $title)  : $title)->fields($fieldsWithoutPanel);
+            $title = strtolower($this->name()[0]);
+            $panels[] = Panel::make($panelFallback ? ($panelFallback . ' ' . $title) : $title)->fields($fieldsWithoutPanel);
         }
 
-        $visiblePanels = collect($this->fields())->filter(function ($panel) {
-            $fieldsVisible = count(collect(@$panel->fields ?? [])->filter(function ($field) {
-                return $field->visible  && $field->type !== FIELD_TYPES::MODULE->value;
-            })->toArray()) > 0;
-            return $panel->visible && class_basename(get_class($panel)) === "Panel" && $fieldsVisible;
-        })->toArray();
+        foreach ($fields as $panel) {
+            $panelFields = [];
+            if (data_get($panel, "visible")) {
+                foreach (data_get($panel, 'fields', []) as $field) {
+                    if (data_get($field, "visible") && data_get($field, "type") !== FIELD_TYPES::MODULE->value) {
+                        $panelFields[] = $field;
+                    }
+                }
+                if (count($panelFields)) {
+                    $panels[] = $panel;
+                }
+            }
+        }
 
-        $panels = array_merge($panels, $visiblePanels);
-
-        $fieldResources = collect($this->fields())->filter(function ($field) {
+        $fieldResources = collect($fields)->filter(function ($field) {
             return $field->visible && $field->type === FIELD_TYPES::MODULE->value;
         })->toArray();
 
         if (count($fieldResources)) {
             $panels[] = Panel::make("", "resources")->fields($fieldResources);
         }
+
         return $panels;
     }
+
 
     public function processFieldDetail($entity, $field): string
     {

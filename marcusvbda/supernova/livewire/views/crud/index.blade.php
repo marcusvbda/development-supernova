@@ -33,23 +33,25 @@
                 </div>
             </div>
             @foreach ($fields as $fieldIndex => $field)
-                <div
-                    class="w-full flex flex-col md:flex-row gap-1 md:gap-0 items-center px-4 p-5 md:px-6 @if ($fieldIndex !== count($fields) - 1) border-b-2 border-gray-100 dark:border-gray-700 @endif">
-                    <label class="w-full md:w-3/12">
-                        <h4 class="text-md text-gray-500 dark:text-gray-400">
-                            {{ $field->label }}
-                        </h4>
-                    </label>
-                    <div class="w-full md:w-9/12 text-gray-600 dark:text-gray-300">
-                        @php
-                            $type = data_get($field, 'type');
-                            $fieldBlade = "supernova-livewire-views::crud.fields.$type";
-                        @endphp
-                        @if (View::exists($fieldBlade))
-                            @include($fieldBlade, ['field' => $field])
-                        @endif
+                @if (data_get($field, 'visible'))
+                    <div
+                        class="w-full flex flex-col md:flex-row gap-1 md:gap-0 items-center px-4 p-5 md:px-6 @if ($fieldIndex !== count($fields) - 1) border-b-2 border-gray-100 dark:border-gray-700 @endif">
+                        <label class="w-full md:w-3/12">
+                            <h4 class="text-md text-gray-500 dark:text-gray-400">
+                                {{ $field->label }}
+                            </h4>
+                        </label>
+                        <div class="w-full md:w-9/12 text-gray-600 dark:text-gray-300">
+                            @php
+                                $type = data_get($field, 'type');
+                                $fieldBlade = "supernova-livewire-views::crud.fields.$type";
+                            @endphp
+                            @if (View::exists($fieldBlade))
+                                @include($fieldBlade, ['field' => $field])
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
             @endforeach
         </div>
     @endforeach

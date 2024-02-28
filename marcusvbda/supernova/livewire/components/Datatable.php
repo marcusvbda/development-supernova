@@ -85,9 +85,6 @@ class Datatable extends Component
     private function getAppModule()
     {
         $application = app()->make(config("supernova.application", Application::class));
-        // if ($this->ignoreDeclaration) {
-        // dd($this->ignoreDeclaration);
-        // }
         return $application->getModule($this->module, $this->checkDeclaration);
     }
 

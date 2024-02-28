@@ -5,8 +5,8 @@
 
 @include('supernova::select-field', [
     'index' => $fieldIndex,
-    'options' => data_get($options, $fieldIndex, []),
-    'selected' => data_get($values, $fieldIndex, []),
+    'options' => data_get($options, $fieldIndex, []) ?? [],
+    'selected' => data_get($values, $fieldIndex, []) ?? [],
     'onChange' => 'setSelectOption',
     'onRemove' => 'removeOption',
     'extraClass' => @$errors->has($formIndex) ? 'dark:border-red-500' : '',

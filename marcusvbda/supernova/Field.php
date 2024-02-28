@@ -8,6 +8,7 @@ class Field
     public $label;
     public $resource;
     public $noData;
+    public $uploadDisk;
     public $model;
     public $query;
     public $limit = 1;
@@ -20,6 +21,7 @@ class Field
     public $option_keys = ['value' => 'id', 'label' => 'name'];
     public $options_callback;
     public $options = [];
+    public $previewCallback = null;
     public $visible = true;
 
     public function isNamespace($val)
@@ -57,10 +59,10 @@ class Field
     public function type($type, $relation = null): Field
     {
         $this->type = is_string($type) ? $type : @$type->value;
+
         if ($this->type === FIELD_TYPES::TEXT->value) {
             $this->detailCallback = fn ($entity) => @$entity?->{$this->field} ?? $this->noData;
-        }
-        if ($this->type === FIELD_TYPES::SELECT->value) {
+        } elseif ($this->type === FIELD_TYPES::SELECT->value) {
             $this->detailCallback = function ($entity)  use ($relation) {
                 if (!$this->model) {
                     if (!$this->multiple) {
@@ -92,6 +94,26 @@ class Field
                     return ["value" => $row->{data_get($this->option_keys, 'value')}, "label" => $row->{data_get($this->option_keys, 'label')}];
                 })->toArray();
             };
+        } elseif ($this->type === FIELD_TYPES::UPLOAD->value) {
+            $this->uploadDisk = $relation ? $relation : config("filesystems.default");
+            $this->previewCallback = fn ($file) => $file->temporaryUrl();
+        }
+        return $this;
+    }
+
+    public function preview($callback): Field
+    {
+        if (is_callable($callback)) {
+            $this->previewCallback = $callback;
+        } else {
+            if ($callback === UPLOAD_PREVIEW::AVATAR) {
+                $this->previewCallback = function ($file) {
+                    $url = $file->temporaryUrl();
+                    return <<<BLADE
+                        <img src="$url" class="w-40 h-40 rounded border border-gray-300"/>
+                    BLADE;
+                };
+            }
         }
         return $this;
     }
@@ -139,7 +161,7 @@ class Field
         return $this;
     }
 
-    public function multiple($limit = null): Field
+    public function multiple($limit = INF): Field
     {
         $this->multiple = true;
         $this->limit = $limit;

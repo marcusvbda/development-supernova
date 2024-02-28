@@ -10,4 +10,5 @@ enum FIELD_TYPES: string
     case NUMBER = "number";
     case SELECT = "select";
     case MODULE = "module";
+    case UPLOAD = "upload";
 }

@@ -36,7 +36,7 @@ class Competences extends Module
         return $columns;
     }
 
-    public function fields(): array
+    public function fields($row): array
     {
         return [
             Field::make("name", "Nome")->rules(["required"]),

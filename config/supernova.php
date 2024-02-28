@@ -8,5 +8,5 @@ return [
     "application" => Application::class,
     "modules_template" => "supernova::templates.default",
     "placeholder_no_data" => "<span>   -   </span>",
-    "default_theme" => "light"
+    "default_theme" => "light",
 ];

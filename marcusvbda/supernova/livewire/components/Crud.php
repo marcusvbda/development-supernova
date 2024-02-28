@@ -3,17 +3,21 @@
 namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
+use Illuminate\Http\File;
 use Livewire\Component;
 use marcusvbda\supernova\FIELD_TYPES;
 use Livewire\Attributes\Lazy;
+use Livewire\WithFileUploads;
 
 #[Lazy]
 class Crud extends Component
 {
+    use WithFileUploads;
     public $module;
     public $entity;
     public $panels = [];
     public $values = [];
+    public $uploadingValues = [];
     public $options = [];
     public $loaded_options = [];
     public $panelFallback = 'Cadastro de';
@@ -52,7 +56,7 @@ class Crud extends Component
     public function allFields()
     {
         $module = $this->getModule();
-        $fields = $module->fields();
+        $fields = $module->fields($this->entity);
         $result = [];
         foreach ($fields as $field) {
             $subfields = data_get($field, "fields");
@@ -110,6 +114,15 @@ class Crud extends Component
     public function updated($field)
     {
         $this->validateOnly($field);
+        $fields = $this->allFields();
+        $uploadFields = collect($fields)->filter(fn ($f) => $f->type === FIELD_TYPES::UPLOAD->value);
+        foreach ($uploadFields as $uploadField) {
+            if ($field === "uploadingValues" . "." . $uploadField->field && $this->uploadingValues[$uploadField->field]) {
+                $file = $this->uploadingValues[$uploadField->field];
+                $this->uploadingValues[$uploadField->field] = null;
+                $this->values[$uploadField->field][] = $file;
+            }
+        }
     }
 
     private function getModule()
@@ -143,6 +156,13 @@ class Crud extends Component
     public function setSelectOption($val, $field)
     {
         $this->values[$field][] = $val;
+    }
+
+    public function removeUploadValue($field, $index)
+    {
+        $oldValues = data_get($this->values, $field, []);
+        $newValues = collect($oldValues)->filter(fn ($item, $row) => $row != $index);
+        $this->values[$field] = $newValues->count() > 0 ? $newValues->toArray() : null;
     }
 
     public function save()

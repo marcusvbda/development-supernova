@@ -45,7 +45,7 @@ class Permissions extends Module
         return $columns;
     }
 
-    public function fields(): array
+    public function fields($row): array
     {
         $id = data_get(request()->values, "id");
         return [
