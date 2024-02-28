@@ -32,4 +32,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(AccessGroup::class);
     }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, "team_users");
+    }
+
+    public function squads()
+    {
+        return $this->belongsToMany(Squad::class, "squad_users");
+    }
 }

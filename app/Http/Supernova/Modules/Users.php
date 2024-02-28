@@ -3,6 +3,8 @@
 namespace App\Http\Supernova\Modules;
 
 use App\Models\AccessGroup;
+use App\Models\Squad;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use marcusvbda\supernova\Column;
@@ -52,8 +54,9 @@ class Users extends Module
 
     public function fields($row, $page): array
     {
-        $isRoot = @$row->role !== "root";
+        $isRoot = @$row->role === "root";
         $isCreateOrEdit = in_array($page, ["create", "edit"]);
+        $loggedUser = Auth::user();
         return [
             Panel::make("Informações")->fields([
                 Field::make("avatar", "Avatar")->canSee(!$isRoot)
@@ -61,16 +64,23 @@ class Users extends Module
                     ->rules(["nullable", "image", "max:2048"])
                     ->preview(UPLOAD_PREVIEW::AVATAR),
                 Field::make("name", "Nome")->rules(["required"]),
-                Field::make("email", "Email")->rules([
-                    $isRoot ? "min:1"  : "email",
-                    "required"
-                ]),
+                Field::make("email", "Email")->rules([$isRoot ? "min:1"  : "email", "required"]),
                 Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"])->canSee(!$isRoot),
                 Field::make("whatsapp", "Whatsapp")->mask("(99) 99999-9999")->canSee(!$isRoot),
                 Field::make("position", "Cargo")->canSee(!$isRoot)
             ]),
+            Panel::make("Times")->fields([
+                Field::make("teams", "Times")
+                    ->type(FIELD_TYPES::SELECT, "teams")
+                    ->options(Team::class)
+                    ->multiple(),
+                Field::make("squads", "Squads")
+                    ->type(FIELD_TYPES::SELECT, "squads")
+                    ->options(Squad::class)
+                    ->multiple(),
+            ])->canSee(!$isRoot),
             Panel::make("Nivel de acesso")->fields([
-                Field::make("access_group_id", "Grupo de Acesso")->rules(["required"])
+                Field::make("access_group_id", "Grupo de Acesso")
                     ->type(FIELD_TYPES::SELECT, "access_group")
                     ->options(AccessGroup::class)
                     ->canSee(!$isRoot)
@@ -81,9 +91,7 @@ class Users extends Module
                 Field::make("password_confirmation", "Confirmação de Senha")
                     ->type(FIELD_TYPES::PASSWORD)
                     ->rules(["nullable", "same:values.new_password"])
-            ])->canSee($isCreateOrEdit),
-            Field::make(Teams::class)->canSee(!$isRoot),
-            Field::make(Squads::class)->canSee(!$isRoot),
+            ])->canSee($isCreateOrEdit && (!$isRoot || @$row->id === $loggedUser->id)),
         ];
     }
 

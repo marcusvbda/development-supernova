@@ -128,6 +128,36 @@ return new class extends Migration
                 ->on("squads")
                 ->onDelete("set null");
         });
+
+        Schema::create("team_users", function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger("team_id");
+            $table->foreign("team_id")
+                ->references("id")
+                ->on("teams")
+                ->onDelete("cascade");
+            $table->unsignedBigInteger("user_id");
+            $table->foreign("user_id")
+                ->references("id")
+                ->on("users")
+                ->onDelete("cascade");
+            $table->timestamps();
+        });
+
+        Schema::create("squad_users", function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger("squad_id");
+            $table->foreign("squad_id")
+                ->references("id")
+                ->on("squads")
+                ->onDelete("cascade");
+            $table->unsignedBigInteger("user_id");
+            $table->foreign("user_id")
+                ->references("id")
+                ->on("users")
+                ->onDelete("cascade");
+            $table->timestamps();
+        });
     }
 
     public function down(): void

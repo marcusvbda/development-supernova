@@ -79,9 +79,11 @@ class Crud extends Component
         foreach ($fields as $field) {
             if ($field->rules) {
                 $rules["values." . $field->field] = $field->rules;
+            } else {
+                $rules["values." . $field->field] = [];
             }
         }
-        return $rules;
+        return $rules ?? [];
     }
 
     public function messages()
@@ -168,11 +170,11 @@ class Crud extends Component
 
     public function save()
     {
-        $this->validate();
+        $this->validate($this->rules());
         $isField = $this->parentId && $this->parentModule;
         $module = $this->getModule();
         $values = ['save' => [], 'post_save' => [], 'uploads' => $this->uploadValues];
-        $panels = $module->getVisibleFieldPanels();
+        $panels = $module->getVisibleFieldPanels('', $this->entity, $this->crudType);
         foreach ($panels as $panel) {
             foreach ($panel->fields as $field) {
                 if ($field->type !== FIELD_TYPES::MODULE->value) {

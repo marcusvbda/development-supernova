@@ -249,7 +249,7 @@ class Module
     {
         $fields = $this->fields($entity, $page);
         $fieldsWithoutPanel = collect($fields)->filter(function ($field) {
-            return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::MODULE->value;
+            return $field instanceof Field && $field->visible && $field->type !== FIELD_TYPES::MODULE->value;
         })->toArray();
 
         $panels = [];
