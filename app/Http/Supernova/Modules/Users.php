@@ -38,17 +38,21 @@ class Users extends Module
         $columns[] = Column::make("name", "Nome")
             ->searchable()->sortable()
             ->filterable(FILTER_TYPES::TEXT);
-        $columns[] = Column::make("created_at", "Criado em ...")
+        $columns[] = Column::make("email", "Email")
             ->searchable()->sortable()
-            ->callback(fn ($row) => $row->created_at?->format("d/m/Y - H:i:s"))
-            ->filterable(FILTER_TYPES::DATE_RANGE);
+            ->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::make("whatsapp", "WhatsApp")
+            ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::TEXT);
+        $columns[] = Column::make("position", "Cargo")
+            ->searchable()->sortable()
+            ->filterable(FILTER_TYPES::TEXT);
         return $columns;
     }
 
     public function fields($row, $page): array
     {
-        // $isRoot = @$row->role !== "root";
-        $isRoot = false;
+        $isRoot = @$row->role !== "root";
         $isCreateOrEdit = in_array($page, ["create", "edit"]);
         return [
             Panel::make("Informações")->fields([
@@ -58,7 +62,7 @@ class Users extends Module
                     ->preview(UPLOAD_PREVIEW::AVATAR),
                 Field::make("name", "Nome")->rules(["required"]),
                 Field::make("email", "Email")->rules([
-                    // $isRoot ? "min:1"  : "email", 
+                    $isRoot ? "min:1"  : "email",
                     "required"
                 ]),
                 Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"])->canSee(!$isRoot),
@@ -77,7 +81,9 @@ class Users extends Module
                 Field::make("password_confirmation", "Confirmação de Senha")
                     ->type(FIELD_TYPES::PASSWORD)
                     ->rules(["nullable", "same:values.new_password"])
-            ])->canSee($isCreateOrEdit)
+            ])->canSee($isCreateOrEdit),
+            Field::make(Teams::class)->canSee(!$isRoot),
+            Field::make(Squads::class)->canSee(!$isRoot),
         ];
     }
 
@@ -97,7 +103,6 @@ class Users extends Module
         $user = Auth::user();
         return 'qty:' . $this->id() . ':' . $user->role;
     }
-
 
     public function getCachedQty(): int
     {

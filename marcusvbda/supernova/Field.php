@@ -47,7 +47,7 @@ class Field
             $parentModule = app()->make($field);
             $this->field = $parentModule->id();
             $this->type = FIELD_TYPES::MODULE->value;
-            $this->query = fn ($row) => $row->{$this->field}();
+            $this->query = fn ($row) => @$row->{$this->field} ? $row->{$this->field}() : $row;
         }
     }
 

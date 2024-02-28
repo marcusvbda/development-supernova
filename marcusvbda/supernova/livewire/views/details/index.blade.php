@@ -78,7 +78,7 @@
 
     @foreach ($resourcePanels as $key => $panel)
         <div class="flex flex-col">
-            @foreach (@$panel->fields as $field)
+            @foreach (@$panel->fields as $fKey => $field)
                 @php
                     $fieldResource = app()->make($field->module);
                 @endphp
@@ -86,6 +86,7 @@
                     'module' => $fieldResource,
                     'queryInit' => $module . '.' . $entity->id . '.' . $field->field,
                     'checkDeclaration' => false,
+                    'wireKey' => $key . '-' . $fKey,
                 ])
             @endforeach
         </div>

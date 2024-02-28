@@ -57,7 +57,7 @@ class Module
             if (count($splitted) !== 3) return app()->make($this->model());
             $application = app()->make(config('supernova.application', Application::class));
             $module = $application->getModule($splitted[0]);
-            $field = collect($module->fields())->where("field", $splitted[2])->first();
+            $field = $module->getField($splitted[2]);
             if (!$field) return app()->make($this->model());
             $model = $module->makeModel()->findOrFail($splitted[1]);
             $queryAction = $field->query;
@@ -316,10 +316,21 @@ class Module
         }
     }
 
-    public function getField($field): Field
+    public function getField($field): ?Field
     {
-        $panels = $this->getVisibleFieldPanels();
-        return collect($panels)->map(fn ($panel) => $panel->fields)->flatten()->first(fn ($f) => $f->field === $field);
+        $panels = $this->fields(null, null);
+        foreach ($panels as $panel) {
+            if ($panel instanceof Panel) {
+                foreach ($panel->fields as $f) {
+                    if ($f->field === $field) {
+                        return $f;
+                    }
+                }
+            } elseif ($panel->field === $field) {
+                return $panel;
+            }
+        }
+        return null;
     }
 
     public function onSave($id, $values, $info = []): int

@@ -12,5 +12,7 @@
             {!! Blade::render(implode(' ', $metricCards)) !!}
         </div>
     @endif
-    @include('supernova::modules.resource-list', ['module' => $module])
+    <div class="mb-20">
+        @include('supernova::modules.resource-list', ['module' => $module])
+    </div>
 @endsection
