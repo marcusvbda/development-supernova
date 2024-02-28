@@ -17,7 +17,7 @@
             'module' => $module->id(),
             'entity' => $entity,
             'panelFallback' => 'Edição de',
-            'type' => 'edit',
+            'crudType' => 'edit',
             'parentId' => @$parent_id,
             'parentModule' => @$parent_module,
         ])

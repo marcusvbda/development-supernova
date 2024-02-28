@@ -31,7 +31,7 @@ class Skills extends Module
         return $columns;
     }
 
-    public function fields($row): array
+    public function fields($row, $page): array
     {
         return [
             Field::make("name", "Nome")->rules(["required"]),

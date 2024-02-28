@@ -1,7 +1,7 @@
 @php
     $fieldIndex = data_get($field, 'field');
-    $formIndex = 'values.' . data_get($field, 'field');
-    $selected = data_get($values, $fieldIndex) ?? [];
+    $formIndex = 'uploadingValues.' . data_get($field, 'field');
+    $selected = data_get($uploadValues, $fieldIndex) ?? [];
     $multiple = data_get($field, 'multiple', false);
     $limit = data_get($field, 'limit', 1);
     $previewCallback = data_get($field, 'previewCallback');

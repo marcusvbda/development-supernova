@@ -45,31 +45,39 @@ class Users extends Module
         return $columns;
     }
 
-    public function fields($row = null): array
+    public function fields($row, $page): array
     {
         // $isRoot = @$row->role !== "root";
-        $isRoot = true;
+        $isRoot = false;
+        $isCreateOrEdit = in_array($page, ["create", "edit"]);
         return [
             Panel::make("Informações")->fields([
-                Field::make("avatar", "Avatar")->canSee($isRoot)
+                Field::make("avatar", "Avatar")->canSee(!$isRoot)
                     ->type(FIELD_TYPES::UPLOAD)
                     ->rules(["nullable", "image", "max:2048"])
                     ->preview(UPLOAD_PREVIEW::AVATAR),
                 Field::make("name", "Nome")->rules(["required"]),
-                Field::make("email", "Email")->rules(["email", "required"]),
-                Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"]),
-                Field::make("whatsapp", "Whatsapp"),
-                Field::make("position", "Cargo"),
+                Field::make("email", "Email")->rules([
+                    // $isRoot ? "min:1"  : "email", 
+                    "required"
+                ]),
+                Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"])->canSee(!$isRoot),
+                Field::make("whatsapp", "Whatsapp")->mask("(99) 99999-9999")->canSee(!$isRoot),
+                Field::make("position", "Cargo")->canSee(!$isRoot)
             ]),
             Panel::make("Nivel de acesso")->fields([
                 Field::make("access_group_id", "Grupo de Acesso")->rules(["required"])
-                    ->type(FIELD_TYPES::SELECT)
+                    ->type(FIELD_TYPES::SELECT, "access_group")
                     ->options(AccessGroup::class)
+                    ->canSee(!$isRoot)
             ]),
             Panel::make("Credenciais")->fields([
-                Field::make("new_password", "Senha"),
-                Field::make("password_confirmation", "Confirmação de Senha")->rules(["nullable", "same:new_password"])
-            ])
+                Field::make("new_password", "Senha")
+                    ->type(FIELD_TYPES::PASSWORD)->rules(["nullable"]),
+                Field::make("password_confirmation", "Confirmação de Senha")
+                    ->type(FIELD_TYPES::PASSWORD)
+                    ->rules(["nullable", "same:values.new_password"])
+            ])->canSee($isCreateOrEdit)
         ];
     }
 
@@ -103,5 +111,18 @@ class Users extends Module
     {
         if ($row->role == "root") return false;
         return true;
+    }
+
+    public function onSave($id, $values, $info = []): int
+    {
+        $new_password = data_get($values, "save.new_password");
+        $id = parent::onSave($id, $values, $info);
+        if ($new_password) {
+            $user = User::find($id);
+            $user->password = bcrypt($new_password);
+            $user->save();
+        }
+
+        return $id;
     }
 }

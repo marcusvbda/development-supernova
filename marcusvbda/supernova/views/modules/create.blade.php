@@ -15,6 +15,7 @@
             'module' => $module->id(),
             'parentId' => @$parent_id,
             'parentModule' => @$parent_module,
+            'crudType' => 'create',
         ])
     </section>
 @endsection

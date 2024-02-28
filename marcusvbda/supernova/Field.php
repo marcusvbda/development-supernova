@@ -15,6 +15,7 @@ class Field
     public $multiple = false;
     public $detailCallback;
     public $mask = "";
+    public $uploadPath = "uploads";
     public $type = "text";
     public $rules = [];
     public $messages = [];
@@ -56,7 +57,7 @@ class Field
         return $this;
     }
 
-    public function type($type, $relation = null): Field
+    public function type($type, $relation = null, $path = null): Field
     {
         $this->type = is_string($type) ? $type : @$type->value;
 
@@ -96,12 +97,29 @@ class Field
             };
         } elseif ($this->type === FIELD_TYPES::UPLOAD->value) {
             $this->uploadDisk = $relation ? $relation : config("filesystems.default");
+            if ($path) {
+                $this->uploadPath = $path;
+            }
             $this->previewCallback = function ($file) {
-                $url = $file->temporaryUrl();
-                $name = $file->getClientOriginalName();
+                // $url = $file->temporaryUrl();
+                // $name = $file->getClientOriginalName();
                 return <<<BLADE
-                    <a href="$url"  class="hover:text-blue-600 text-blue-500 cursor-pointer" target="_BLANK">$name</a>
+                   teste
                 BLADE;
+            };
+
+            $this->detailCallback = function ($row) {
+                $files = $row->{$this->field} ?? [];
+                if (!count($files)) return $this->noData;
+                $callback = $this->previewCallback;
+                $rows = collect($files)->map(function ($file) use ($callback) {
+                    return $callback($file);
+                })->implode("");
+                return <<<BLADE
+                    <div class="flex flex-wrap gap-2">
+                        $rows
+                    </div>
+                 BLADE;
             };
         }
         return $this;
@@ -114,8 +132,19 @@ class Field
         } else {
             if ($callback === UPLOAD_PREVIEW::AVATAR) {
                 $this->previewCallback = function ($file) {
-                    $url = $file->temporaryUrl();
-                    $name = $file->getClientOriginalName();
+                    if (is_array($file)) {
+                        $id = data_get($file, "id");
+                        $path = data_get($file, "path");
+                        $disk = data_get($file, "disk");
+                        $name = data_get($file, "original_name");
+                        $extension = data_get($file, "extension");
+                        $path = str_replace("/", "-", $path);
+                        $fileName = $path . "-" . $id . "." . $extension;
+                        $url = route("supernova.modules.upload-download", ["disk" => $disk, "file" => $fileName]);
+                    } else {
+                        $url = $file->temporaryUrl();
+                        $name = $file->getClientOriginalName();
+                    }
                     return <<<BLADE
                         <a href="$url" target="_BLANK" title="$name">
                             <img src="$url" alt="$name" class="w-40 h-40 rounded border border-gray-300"/>

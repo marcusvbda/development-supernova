@@ -234,7 +234,7 @@ class Module
         return "Criar " . strtolower($name[0]);
     }
 
-    public function fields($row): array
+    public function fields($row, $page): array
     {
         $tableColumns = $this->getTableColumns();
         $fields = [];
@@ -245,9 +245,9 @@ class Module
         return $fields;
     }
 
-    public function getVisibleFieldPanels($panelFallback = "", $entity = null): array
+    public function getVisibleFieldPanels($panelFallback = "", $entity = null, $page = null): array
     {
-        $fields = $this->fields($entity);
+        $fields = $this->fields($entity, $page);
         $fieldsWithoutPanel = collect($fields)->filter(function ($field) {
             return $field->visible && class_basename(get_class($field)) === "Field" && $field->type !== FIELD_TYPES::MODULE->value;
         })->toArray();
@@ -316,10 +316,40 @@ class Module
         }
     }
 
+    public function getField($field): Field
+    {
+        $panels = $this->getVisibleFieldPanels();
+        return collect($panels)->map(fn ($panel) => $panel->fields)->flatten()->first(fn ($f) => $f->field === $field);
+    }
+
     public function onSave($id, $values, $info = []): int
     {
         $parent_id = data_get($info, "parent_id");
         $parent_module = data_get($info, "parent_module");
+        $uploads = data_get($values, "uploads", []);
+        foreach ($uploads as $key => $upload) {
+            $field = $this->getField($key);
+            $disk = $field->uploadDisk;
+            if ($upload) {
+                foreach ($upload as $file) {
+                    if (!is_array($file)) {
+                        $extension = $file->getClientOriginalExtension();
+                        $fileName = uniqid();
+                        $file->storeAs($field->uploadPath, $fileName, $disk);
+                        $values['save'][$key][] = [
+                            "path" => $field->uploadPath,
+                            "id" => $fileName,
+                            "extension" => $extension,
+                            "disk" => $disk,
+                            "original_name" => $file->getClientOriginalName(),
+                            "size" => $file->getSize(),
+                        ];
+                    }
+                }
+            } else {
+                $values['save'][$key] = [];
+            }
+        }
         if ($parent_id && $parent_module) {
             $application = app()->make(config('supernova.application', Application::class));
             $parentModule = $application->getModule($parent_module, false);

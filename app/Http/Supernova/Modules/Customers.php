@@ -41,7 +41,7 @@ class Customers extends Module
         return $columns;
     }
 
-    public function fields($row): array
+    public function fields($row, $page): array
     {
         return [
             Panel::make("Informações")->fields([

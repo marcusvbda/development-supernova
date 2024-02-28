@@ -5,6 +5,7 @@ namespace marcusvbda\supernova;
 use App\Http\Controllers\Controller;
 use App\Http\Supernova\Application;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ModulesController extends Controller
@@ -100,5 +101,17 @@ class ModulesController extends Controller
         $editView->parent_module = $parentModule;
         $editView->parent_id = $parentId;
         return $editView;
+    }
+
+    public function uploadDowload($disk, $file)
+    {
+        $splitted = explode(".", $file);
+        $name = explode("-", $splitted[0]);
+        $id = array_pop($name);
+        $path = implode("/", $name);
+        $extension = $splitted[1];
+        $file = Storage::disk($disk)->get($path . "/" . $id);
+        if (!$file) abort(404);
+        return response($file)->header('Content-Type', 'image/' . $extension);
     }
 }

@@ -27,4 +27,9 @@ class User extends Authenticatable
     {
         return explode(" ", $this->name)[0];
     }
+
+    public function access_group()
+    {
+        return $this->belongsTo(AccessGroup::class);
+    }
 }

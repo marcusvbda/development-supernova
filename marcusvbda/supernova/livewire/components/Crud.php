@@ -3,7 +3,6 @@
 namespace marcusvbda\supernova\livewire\components;
 
 use App\Http\Supernova\Application;
-use Illuminate\Http\File;
 use Livewire\Component;
 use marcusvbda\supernova\FIELD_TYPES;
 use Livewire\Attributes\Lazy;
@@ -18,10 +17,10 @@ class Crud extends Component
     public $panels = [];
     public $values = [];
     public $uploadingValues = [];
+    public $uploadValues = [];
     public $options = [];
     public $loaded_options = [];
     public $panelFallback = 'Cadastro de';
-    public $type = 'create';
     public $crudType = 'create';
     public $parentId = null;
     public $parentModule = null;
@@ -33,7 +32,7 @@ class Crud extends Component
 
     public function mount()
     {
-        if ($this->type === 'edit') {
+        if ($this->crudType === 'edit') {
             $this->values["id"] = data_get($this->entity, "id");
             $fields = $this->allFields();
             foreach ($fields as $field) {
@@ -45,18 +44,19 @@ class Crud extends Component
                         $value = data_get($this->entity, $field->field);
                         $this->values[$field->field] = $value ? [$value] : [];
                     }
+                } elseif ($field->type === FIELD_TYPES::UPLOAD->value) {
+                    $this->uploadValues[$field->field] = data_get($this->entity, $field->field, []) ?? [];
                 } else {
                     $this->values[$field->field] = data_get($this->entity, $field->field);
                 }
             }
         }
-        $this->crudType = $this->type;
     }
 
     public function allFields()
     {
         $module = $this->getModule();
-        $fields = $module->fields($this->entity);
+        $fields = $module->fields($this->entity, $this->crudType);
         $result = [];
         foreach ($fields as $field) {
             $subfields = data_get($field, "fields");
@@ -104,7 +104,7 @@ class Crud extends Component
         $fields = $this->allFields();
         $attr = [];
         foreach ($fields as $field) {
-            if ($field->rules) {
+            if ($field->rules && $field->type !== FIELD_TYPES::UPLOAD->value) {
                 $attr["values." . $field->field] = $field->field;
             }
         }
@@ -118,9 +118,10 @@ class Crud extends Component
         $uploadFields = collect($fields)->filter(fn ($f) => $f->type === FIELD_TYPES::UPLOAD->value);
         foreach ($uploadFields as $uploadField) {
             if ($field === "uploadingValues" . "." . $uploadField->field && $this->uploadingValues[$uploadField->field]) {
+                $this->validate(["uploadingValues." . $uploadField->field => $uploadField->rules], []);
                 $file = $this->uploadingValues[$uploadField->field];
                 $this->uploadingValues[$uploadField->field] = null;
-                $this->values[$uploadField->field][] = $file;
+                $this->uploadValues[$uploadField->field][] = $file;
             }
         }
     }
@@ -160,9 +161,9 @@ class Crud extends Component
 
     public function removeUploadValue($field, $index)
     {
-        $oldValues = data_get($this->values, $field, []);
+        $oldValues = data_get($this->uploadValues, $field, []);
         $newValues = collect($oldValues)->filter(fn ($item, $row) => $row != $index);
-        $this->values[$field] = $newValues->count() > 0 ? $newValues->toArray() : null;
+        $this->uploadValues[$field] = $newValues->count() > 0 ? $newValues->toArray() : null;
     }
 
     public function save()
@@ -170,7 +171,7 @@ class Crud extends Component
         $this->validate();
         $isField = $this->parentId && $this->parentModule;
         $module = $this->getModule();
-        $values = ['save' => [], 'post_save' => []];
+        $values = ['save' => [], 'post_save' => [], 'uploads' => $this->uploadValues];
         $panels = $module->getVisibleFieldPanels();
         foreach ($panels as $panel) {
             foreach ($panel->fields as $field) {
@@ -182,7 +183,9 @@ class Crud extends Component
                             $values['save'][$field->field] = data_get(data_get($this->values, $field->field, []), "0");
                         }
                     } else {
-                        $values['save'][$field->field] = $this->values[$field->field];
+                        if (isset($this->values[$field->field])) {
+                            $values['save'][$field->field] = $this->values[$field->field];
+                        }
                     }
                 }
             }

@@ -2,7 +2,7 @@
     use App\Http\Supernova\Application;
     $application = app()->make(config('supernova.application', Application::class));
     $appModule = $application->getModule($module, false);
-    $panels = $appModule->getVisibleFieldPanels($panelFallback);
+    $panels = $appModule->getVisibleFieldPanels($panelFallback, @$entity, @$crudType);
     $fieldPanels = collect($panels)->where('type', 'fields')->toArray();
     $resourcePanels = collect($panels)->where('type', 'resources')->toArray();
 @endphp

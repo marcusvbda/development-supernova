@@ -15,4 +15,5 @@ Route::group(['middleware' => ['web']], function () {
         Route::get('{module}/{id}/{field}/{fieldId}', [ModulesController::class, 'fieldDetails'])->name('supernova.modules.field-details');
         Route::get('{module}/{id}/{field}/{fieldId}/edit', [ModulesController::class, 'fieldEdit'])->name('supernova.modules.field-edit');
     });
+    Route::get('upload/{disk}/{file}', [ModulesController::class, 'uploadDowload'])->name('supernova.modules.upload-download');
 });
