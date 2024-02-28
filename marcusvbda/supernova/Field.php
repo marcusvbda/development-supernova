@@ -96,7 +96,13 @@ class Field
             };
         } elseif ($this->type === FIELD_TYPES::UPLOAD->value) {
             $this->uploadDisk = $relation ? $relation : config("filesystems.default");
-            $this->previewCallback = fn ($file) => $file->temporaryUrl();
+            $this->previewCallback = function ($file) {
+                $url = $file->temporaryUrl();
+                $name = $file->getClientOriginalName();
+                return <<<BLADE
+                    <a href="$url"  class="hover:text-blue-600 text-blue-500 cursor-pointer" target="_BLANK">$name</a>
+                BLADE;
+            };
         }
         return $this;
     }
@@ -109,8 +115,11 @@ class Field
             if ($callback === UPLOAD_PREVIEW::AVATAR) {
                 $this->previewCallback = function ($file) {
                     $url = $file->temporaryUrl();
+                    $name = $file->getClientOriginalName();
                     return <<<BLADE
-                        <img src="$url" class="w-40 h-40 rounded border border-gray-300"/>
+                        <a href="$url" target="_BLANK" title="$name">
+                            <img src="$url" alt="$name" class="w-40 h-40 rounded border border-gray-300"/>
+                        </a>
                     BLADE;
                 };
             }

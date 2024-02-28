@@ -54,7 +54,7 @@ class Users extends Module
                 Field::make("avatar", "Avatar")->canSee($isRoot)
                     ->type(FIELD_TYPES::UPLOAD)
                     ->rules(["nullable", "image", "max:2048"])
-                    ->multiple(3)->preview(UPLOAD_PREVIEW::AVATAR),
+                    ->preview(UPLOAD_PREVIEW::AVATAR),
                 Field::make("name", "Nome")->rules(["required"]),
                 Field::make("email", "Email")->rules(["email", "required"]),
                 Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"]),
