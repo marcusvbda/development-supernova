@@ -2,6 +2,7 @@
 
 namespace App\Http\Supernova\Modules;
 
+use App\Livewire\Users\UserSignature;
 use App\Models\AccessGroup;
 use App\Models\Squad;
 use App\Models\Team;
@@ -54,7 +55,7 @@ class Users extends Module
 
     public function fields($row, $page): array
     {
-        $isRoot = @$row->role === "root";
+        $isRoot = @$row->role !== "root";
         $isCreateOrEdit = in_array($page, ["create", "edit"]);
         $loggedUser = Auth::user();
         return [
@@ -65,9 +66,13 @@ class Users extends Module
                     ->preview(UPLOAD_PREVIEW::AVATAR),
                 Field::make("name", "Nome")->rules(["required"]),
                 Field::make("email", "Email")->rules([$isRoot ? "min:1"  : "email", "required"]),
-                Field::make("linkedin", "URL do Linkedin")->rules(["url", "nullable"])->canSee(!$isRoot),
+                Field::make("linkedin", "Linkedin")->canSee(!$isRoot),
+                Field::make("instagram", "Instagram")->canSee(!$isRoot),
                 Field::make("whatsapp", "Whatsapp")->mask("(99) 99999-9999")->canSee(!$isRoot),
-                Field::make("position", "Cargo")->canSee(!$isRoot)
+                Field::make("position", "Cargo")->canSee(!$isRoot),
+                Field::make("signture", "Assinatura")->component(function ($entity, $values, $page) {
+                    return (new UserSignature($entity, $values, $page))->render();
+                })->canSee(!$isRoot),
             ]),
             Panel::make("Times")->fields([
                 Field::make("teams", "Times")
