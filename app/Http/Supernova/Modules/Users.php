@@ -55,7 +55,7 @@ class Users extends Module
 
     public function fields($row, $page): array
     {
-        $isRoot = @$row->role !== "root";
+        $isRoot = @$row->role === "root";
         $isCreateOrEdit = in_array($page, ["create", "edit"]);
         $loggedUser = Auth::user();
         return [
