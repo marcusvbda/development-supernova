@@ -6,6 +6,7 @@ use App\Http\Supernova\Application;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Livewire\Livewire;
+use marcusvbda\supernova\commands\InstallCommand;
 
 class SupernovaServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,17 @@ class SupernovaServiceProvider extends ServiceProvider
     public function __construct($app)
     {
         parent::__construct($app);
+        $this->createApplicationFileIfNotExists();
         $this->novaApp = new Application();
+    }
+
+    public function createApplicationFileIfNotExists()
+    {
+        $path = app_path('Http/Supernova/Application.php');
+        if (file_exists($path)) return;
+        $content = file_get_contents(__DIR__ . "/commands/application_examples.php");
+        if (!file_exists(app_path('Http/Supernova'))) mkdir(app_path('Http/Supernova'), 0777, true);
+        file_put_contents(app_path('Http/Supernova/Application.php'), $content);
     }
 
     public function boot(Router $router): void
@@ -45,5 +56,10 @@ class SupernovaServiceProvider extends ServiceProvider
         Livewire::component('supernova::dashboard', $this->novaApp->dashboard());
         Livewire::component('supernova::alerts', $this->novaApp->alerts());
         Livewire::component('supernova::crud', $this->novaApp->crud());
+
+        $this->app->bind('supernova:install', InstallCommand::class);
+        $this->commands([
+            'supernova:install',
+        ]);
     }
 }
