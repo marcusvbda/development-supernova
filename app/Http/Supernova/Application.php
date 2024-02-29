@@ -6,6 +6,7 @@ use App\Http\Supernova\Modules\AccessGroups;
 use App\Http\Supernova\Modules\Competences;
 use App\Http\Supernova\Modules\Customers;
 use App\Http\Supernova\Modules\Permissions;
+use App\Http\Supernova\Modules\PermissionTypes;
 use App\Http\Supernova\Modules\Projects;
 use App\Http\Supernova\Modules\Squads;
 use App\Http\Supernova\Modules\Teams;
@@ -60,6 +61,7 @@ class Application extends SupernovaApplication
 
             //configurações
             AccessGroups::class,
+            PermissionTypes::class,
             Permissions::class,
         ];
     }

@@ -2,16 +2,14 @@
 
 namespace App\Http\Supernova\Modules;
 
-use App\Models\AccessGroup;
-use App\Models\Permission;
+use App\Models\PermissionType;
+use Illuminate\Support\Facades\Auth;
 use marcusvbda\supernova\Column;
+use marcusvbda\supernova\Field;
 use marcusvbda\supernova\FILTER_TYPES;
 use marcusvbda\supernova\Module;
-use Auth;
-use marcusvbda\supernova\Field;
-use marcusvbda\supernova\FIELD_TYPES;
 
-class AccessGroups extends Module
+class PermissionTypes extends Module
 {
     public function subMenu(): string
     {
@@ -20,12 +18,12 @@ class AccessGroups extends Module
 
     public function name(): array
     {
-        return ['Grupo de acesso', 'Grupos de acesso'];
+        return ['Tipo de permissão', 'Tipos de permissões'];
     }
 
     public function model(): string
     {
-        return AccessGroup::class;
+        return PermissionType::class;
     }
 
     public function dataTable(): array
@@ -43,9 +41,6 @@ class AccessGroups extends Module
     {
         return [
             Field::make("name", "Nome")->rules(["required"], ["required" => "O campo nome é obrigatório"]),
-            Field::make("permissions", "Permissões")->type(FIELD_TYPES::SELECT)
-                ->options(Permission::class, 'permissions')
-                ->multiple()
         ];
     }
 
